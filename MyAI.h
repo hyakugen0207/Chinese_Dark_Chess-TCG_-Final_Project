@@ -5,12 +5,20 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <sys/un.h>
 
 #define RED 0
 #define BLACK 1
 #define CHESS_COVER -1
 #define CHESS_EMPTY -2
 #define COMMAND_NUM 18
+#define SERVER_PATH     "/tmp/server"
+#define BUFFER_LENGTH    6
+#define FALSE              0
+
 class MyAI  
 {
 	enum { 
@@ -41,6 +49,11 @@ class MyAI
   	"showboard"
 	};
 public:
+	int    sd=-1, sd2=-1;
+	int    rc, length;
+	char   buffer[BUFFER_LENGTH];
+	struct sockaddr_un serveraddr;
+
 	void generateMove(char move[6]);
 	void MakeMove(const char move[6]);
 	MyAI(void);
@@ -75,6 +88,7 @@ private:
 	void Pirnf_Chess(int chess_no,char *Result);
 	bool Referee(int* Board,int Startoint,int EndPoint,int color);
 	int Expand(int* Board,int color,int *Result);
+	bool sendToAI(char* command, char* response);
 };
 
 #endif

@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "MyAI.h"
-#include "ZobristHashTable.hpp"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <sys/un.h>
 
 // commands enumerate
 enum COMMANDS{
@@ -47,17 +50,18 @@ static bool (MyAI::*functions[])(const char* [], char*) = {
   &MyAI::showboard
 };
 
+
 int main(){
   char read[1024], write[1024], output[1024], *token;
   const char *data[10];
   int id;
   bool isFailed;
   MyAI myai;
+  
 
-  ZobristHashTable::initStaticValue();
 
 
-  /*
+  
   do{
     // read command
     fgets(read, 1024, stdin);
@@ -100,6 +104,6 @@ int main(){
     fflush(stderr);
 
   }while(id != QUIT);
-  */
+  
   return 0;
 }

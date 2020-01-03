@@ -1,6 +1,5 @@
 #include "myDefine.hpp"
 #include "Board.hpp"
-#include <vec
 
 class CDCNode{
     public:

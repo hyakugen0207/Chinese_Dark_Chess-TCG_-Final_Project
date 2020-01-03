@@ -67,33 +67,57 @@ bool MyAI::num_moves_to_draw(const char* data[], char* response){
 }
 
 bool MyAI::move(const char* data[], char* response){
-  char move[6];
+    char move[6];
 	sprintf(move, "%s-%s", data[0], data[1]);
-	this->MakeMove(move);
-	return 0;
+	char re[6];
+	re[0] = '\0';
+	if(!sendToAI(move, re)){
+		return 1;
+	}
+	if(strlen(re)>0 && re[0]=='0'){
+		return 0;
+	}
+	return 1;
 }
 
 bool MyAI::flip(const char* data[], char* response){
   char move[6];
 	sprintf(move, "%s(%s)", data[0], data[1]);
-	this->MakeMove(move);
-	return 0;
+	char re[6];
+	re[0] = '\0';
+	if(!sendToAI(move, re)){
+		return 1;
+	}
+	if(strlen(re)>0 && re[0]=='0'){
+		return 0;
+	}
+	return 1;
 }
 
 bool MyAI::genmove(const char* data[], char* response){
 	// set color
+	char move[6];
+	move[0] = 'g';
 	if(!strcmp(data[0], "red")){
-		this->Color = RED;
+		move[1] = 'r';
 	}else if(!strcmp(data[0], "black")){
-		this->Color = BLACK;
+		move[1] = 'b';
 	}else{
-		this->Color = 2;
+		move[1] = 'u';
 	}
 	// genmove
-  char move[6];
-	this->generateMove(move);
-	sprintf(response, "%c%c %c%c", move[0], move[1], move[3], move[4]);
-	return 0;
+    
+	char re[6];
+	re[0] = '\0';
+	if(!sendToAI(move, re)){
+		return 1;
+	}
+
+	if(strlen(re)>0 && re[2]=='-'){
+		sprintf(response, "%c%c %c%c", re[0], re[1], re[3], re[4]);
+		return 0;
+	}
+	return 1;
 }
 
 bool MyAI::game_over(const char* data[], char* response){
@@ -598,3 +622,85 @@ bool MyAI::Referee(int* chess,int from_location_no,int to_location_no,int UserId
 	return IsCurrent;
 }
 
+
+
+bool MyAI::sendToAI(char* command, char* response){
+  int    sd=-1, sd2=-1;
+  int    rc, length;
+  char   buffer[BUFFER_LENGTH];
+  struct sockaddr_un serveraddr;
+
+  sd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (sd < 0)
+    {
+      perror("socket() failed");
+      return false;
+    }
+    memset(&serveraddr, 0, sizeof(serveraddr));
+    serveraddr.sun_family = AF_UNIX;
+    strcpy(serveraddr.sun_path, SERVER_PATH);
+
+    rc = bind(sd, (struct sockaddr *)&serveraddr, SUN_LEN(&serveraddr));
+    while (rc < 0)
+    {
+		fprintf(stderr, "bind() failed");
+		unlink(SERVER_PATH);
+		sleep(1);
+		rc = bind(sd, (struct sockaddr *)&serveraddr, SUN_LEN(&serveraddr));
+    }
+	fprintf(stderr, "bind() ok");
+    rc = listen(sd, 10);
+    if (rc< 0)
+    {
+        perror("listen() failed");
+        return false;
+    }
+    sd2 = accept(sd, NULL, NULL);
+    if (sd2 < 0)
+    {
+        perror("accept() failed");
+        return false;
+    }
+    length = BUFFER_LENGTH;
+    rc = setsockopt(sd2, SOL_SOCKET, SO_REUSEADDR,
+                                        (char *)&length, sizeof(length));
+    if (rc < 0)
+    {
+        perror("setsockopt(SO_RCVLOWAT) failed");
+        return false;
+    }
+
+	rc = send(sd2, command, sizeof(command), 0);
+	if (rc < 0)
+	{
+		perror("send() failed");
+		return false;
+	}
+
+
+	rc = recv(sd2, buffer, sizeof(buffer), 0);
+	if (rc < 0)
+	{
+		perror("recv() failed");
+		return false;
+	} 
+	if (rc == 0 ||
+		rc < sizeof(buffer))
+	{
+		printf("The client closed the connection before all of the\n");
+		printf("data was sent\n");
+		return false;
+	}
+
+	sprintf(response, "%c%c%c%c%c", buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
+
+	if (sd != -1)
+      close(sd);
+
+    if (sd2 != -1)
+      close(sd2);
+
+	unlink(SERVER_PATH);
+
+	return true;
+}
