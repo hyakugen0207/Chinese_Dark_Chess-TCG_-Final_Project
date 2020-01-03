@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "MyAI.h"
+#include "ZobristHashTable.hpp"
 
 // commands enumerate
 enum COMMANDS{
@@ -52,6 +53,11 @@ int main(){
   int id;
   bool isFailed;
   MyAI myai;
+
+  ZobristHashTable::initStaticValue();
+
+
+  /*
   do{
     // read command
     fgets(read, 1024, stdin);
@@ -94,6 +100,6 @@ int main(){
     fflush(stderr);
 
   }while(id != QUIT);
-
+  */
   return 0;
 }

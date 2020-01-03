@@ -1,26 +1,40 @@
+#include "myDefine.hpp"
+#include "Board.hpp"
+#include <climits>
+#include <cstdlib>
+#include <iostream>
 
 
 
-#define HASH_NODE_NUM 1073741824 //2^32
-
-
-class ZobristHashTable{
-    public :
-        static unsigned long long int randomValue[15][32];
-        static unsigned long long int randomPlyValue[2];
-        HashNode hashNodes[HASH_NODE_NUM];
-
-        int getHashValue(bool ply, int oldValue); // parameter move
-};
 
 
 class HashNode{
     public :
-        unsigned long long int key;
+        ULL key;
         int depth;
         int value;
         bool ply;
         char nextMove;
-
-        bool isSame(unsigned long long int compareKey);
+        bool isSame(ULL compareKey);
 };
+
+
+class ZobristHashTable{
+    public :
+        static ULL randomValue[15][32];
+        static ULL randomPlyValue[2];
+        static ULL initValue;
+        static void initStaticValue();
+
+        HashNode hashNodes[HASH_NODE_NUM];
+        
+        ULL updateHashValue(Board* board); //init
+        ULL updateHashValue(ULL oldValue, char pieceFrom, char pieceFromPos, char pieceToPos, char pieceDead); // jump or eat
+        ULL updateHashValue(ULL oldValue, char pieceFrom, char pieceFromPos, char pieceToPos); // move
+        ULL updateHashValue(ULL oldValue, char pieceFlip, char pieceFromPos); // flip
+    private:
+
+        
+};
+
+
