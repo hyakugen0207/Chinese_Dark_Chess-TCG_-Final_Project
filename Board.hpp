@@ -6,16 +6,21 @@ class Board{
     public:
         Piece* board[60];
         bool ply;
-        Piece pieces[33];
+        Piece pieces[34];
         Piece* pieceList[2][16];
-        int numPieces[2];
+        int numPiecesInList[2];
         int alivePieces[2][7];
+        int numAlivePieces[2];
 
         std::vector<std::pair<char,char>> moveList();
-        bool move(char from, char dir);
+        bool move(char from, char to);
+        bool flip(char pos, char piece);
         void removePiece(int index, bool ply); //removePieceFromPieceList
+        int addPiece(Piece* piece, bool ply); //addPieceToPieceList
         int getScore();
         bool isLegalMove(int from, int to, bool ply);
+        void initBoard();
+        bool firstMove(char pos, char piece);
 };
 
 
