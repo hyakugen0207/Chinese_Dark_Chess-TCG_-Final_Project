@@ -1,10 +1,11 @@
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include "MyAI.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <sys/un.h>
+#include <iostream>
 
 // commands enumerate
 enum COMMANDS{
@@ -57,9 +58,20 @@ int main(){
   int id;
   bool isFailed;
   MyAI myai;
-  
 
+  const std::string AI_PATH = "./SHIRO";
 
+  int pid = fork();
+  if(pid == -1){
+    std::cerr << "fork error" << std::endl;
+  }
+
+  if(!pid){
+      if ( execlp(AI_PATH.c_str(), nullptr) == -1 ) {
+				throw std::runtime_error("AGENT(exec_name)::child execlp() error\n");
+			}
+      return 0;
+  }
 
   
   do{

@@ -16,7 +16,7 @@
 #define CHESS_EMPTY -2
 #define COMMAND_NUM 18
 #define SERVER_PATH     "/tmp/server"
-#define BUFFER_LENGTH    6
+#define BUFFER_LENGTH    9
 #define FALSE              0
 
 class MyAI  

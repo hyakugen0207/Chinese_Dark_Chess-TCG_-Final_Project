@@ -41,8 +41,17 @@ bool MyAI::list_commands(const char* data[], char* response){
 }
 
 bool MyAI::quit(const char* data[], char* response){
-  fprintf(stderr, "Bye\n"); 
-	return 0;
+	fprintf(stderr, "Bye\n"); 
+	char move[9], re[9];
+	move[0] = 'q';
+	move[1] = move[8] = re[0] = '\0';
+	if(!sendToAI(move, re)){
+		return 1;
+	}
+	if(strlen(re)>0 && re[0]=='q'){
+		return 0;
+	}
+	return 1;
 }
 
 bool MyAI::boardsize(const char* data[], char* response){
@@ -51,11 +60,16 @@ bool MyAI::boardsize(const char* data[], char* response){
 }
 
 bool MyAI::reset_board(const char* data[], char* response){
-	this->Color = 2;
-	this->Red_Time = -1; // known
-	this->Black_Time = -1; // known
-	this->initBoardState();
-	return 0;
+	char move[9], re[9];
+	move[0] = 'r';
+	move[1] = move[8] = re[0] = '\0';
+	if(!sendToAI(move, re)){
+		return 1;
+	}
+	if(strlen(re)>0 && re[0]=='r'){
+		return 0;
+	}
+	return 1;
 }
 
 bool MyAI::num_repetition(const char* data[], char* response){
@@ -67,28 +81,26 @@ bool MyAI::num_moves_to_draw(const char* data[], char* response){
 }
 
 bool MyAI::move(const char* data[], char* response){
-    char move[6];
-	sprintf(move, "%s-%s", data[0], data[1]);
-	char re[6];
-	re[0] = '\0';
+    char move[9], re[9];
+	sprintf(move, "m%s-%s", data[0], data[1]);
+	move[8] = re[0] = '\0';
 	if(!sendToAI(move, re)){
 		return 1;
 	}
-	if(strlen(re)>0 && re[0]=='0'){
+	if(strlen(re)>0 && re[0]=='m'){
 		return 0;
 	}
 	return 1;
 }
 
 bool MyAI::flip(const char* data[], char* response){
-  char move[6];
-	sprintf(move, "%s(%s)", data[0], data[1]);
-	char re[6];
-	re[0] = '\0';
+  char move[9], re[9];
+	sprintf(move, "f%s(%s)", data[0], data[1]);
+	re[0] = move[8] = '\0';
 	if(!sendToAI(move, re)){
 		return 1;
 	}
-	if(strlen(re)>0 && re[0]=='0'){
+	if(strlen(re)>0 && re[0]=='f'){
 		return 0;
 	}
 	return 1;
@@ -96,7 +108,7 @@ bool MyAI::flip(const char* data[], char* response){
 
 bool MyAI::genmove(const char* data[], char* response){
 	// set color
-	char move[6];
+	char move[9], re[9];
 	move[0] = 'g';
 	if(!strcmp(data[0], "red")){
 		move[1] = 'r';
@@ -106,9 +118,7 @@ bool MyAI::genmove(const char* data[], char* response){
 		move[1] = 'u';
 	}
 	// genmove
-    
-	char re[6];
-	re[0] = '\0';
+	re[0] = move[8] = '\0';
 	if(!sendToAI(move, re)){
 		return 1;
 	}
@@ -126,21 +136,48 @@ bool MyAI::game_over(const char* data[], char* response){
 }
 
 bool MyAI::ready(const char* data[], char* response){
-  return 0;
+	char move[9], re[9];
+	move[0] = 'k';
+	re[0] = move[8] = move[1] = '\0';
+	if(!sendToAI(move, re)){
+		return 1;
+	}
+	if(strlen(re)>0 && re[0]=='k'){
+		return 0;
+	}
+	return 1;
 }
 
 bool MyAI::time_settings(const char* data[], char* response){
-  return 0;
+  char move[9], re[9];
+	move[0] = 't';
+	re[0] = move[8] = move[1] = '\0';
+	if(!sendToAI(move, re)){
+		return 1;
+	}
+	if(strlen(re)>0 && re[0]=='t'){
+		return 0;
+	}
+	return 1;
 }
 
 bool MyAI::time_left(const char* data[], char* response){
-  if(!strcmp(data[0], "red")){
-		sscanf(data[1], "%d", &(this->Red_Time));
+
+	char move[9], re[9];
+	re[0] = move[8] = '\0';
+    if(!strcmp(data[0], "red")){
+		sprintf(move, "lr%s", data[1]); 
 	}else{
-		sscanf(data[1], "%d", &(this->Black_Time));
+		sprintf(move, "lb%s", data[1]); 
 	}
-	fprintf(stderr, "Time Left(%s): %s\n", data[0], data[1]); 
-	return 0;
+	//fprintf(stderr, "Time Left(%s): %s\n", data[0], data[1]);
+	if(!sendToAI(move, re)){
+		return 1;
+	}
+	if(strlen(re)>0 && re[0]=='l'){
+		return 0;
+	}
+	return 1;
 }
 
 bool MyAI::showboard(const char* data[], char* response){
@@ -670,7 +707,7 @@ bool MyAI::sendToAI(char* command, char* response){
         return false;
     }
 
-	rc = send(sd2, command, sizeof(command), 0);
+	rc = send(sd2, command, 9, 0);
 	if (rc < 0)
 	{
 		perror("send() failed");
@@ -678,7 +715,7 @@ bool MyAI::sendToAI(char* command, char* response){
 	}
 
 
-	rc = recv(sd2, buffer, sizeof(buffer), 0);
+	rc = recv(sd2, buffer, 9, 0);
 	if (rc < 0)
 	{
 		perror("recv() failed");

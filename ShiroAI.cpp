@@ -11,7 +11,7 @@
 #include <sys/un.h>
 
 #define SERVER_PATH     "/tmp/server"
-#define BUFFER_LENGTH    6
+#define BUFFER_LENGTH    9
 
 int recvCommand(char* buffer, int sd){
     int bytesReceived = 0;
@@ -39,9 +39,9 @@ int recvCommand(char* buffer, int sd){
 int main(){
 
     //ZobristHashTable* hashTable = new ZobristHashTable();
-    
+    bool isEnd = false;
 
-    while(true){
+    while(!isEnd){
         // socket
         int    sd=-1, rc;
         char   buffer[BUFFER_LENGTH];
@@ -68,29 +68,74 @@ int main(){
         
         // recv command
         if(recvCommand(buffer,sd)){
-            std::cout << "get : " << buffer << std::endl;
+            /*
+            *   command in buffer (x = don't care)
+            *   
+            *   quit          : qxxxxxxx\0 ->  re : qxxxxxxx\0
+            *   reset_board   : rxxxxxxx\0 ->  re : rxxxxxxx\0
+            *   move          : ma2-b3xx\0 ->  re : mxxxxxxx\0
+            *   flip          : fa2(b3)x\0 ->  re : fxxxxxxx\0
+            *   genmove       : grxxxxxx\0 ->  re : a1-d8xxx\0
+            *   ready         : kxxxxxxx\0 ->  re : kxxxxxxx\0
+            *   time_settings : txxxxxxx\0 ->  re : txxxxxxx\0
+            *   time_left     : lr______\0 ->  re : lxxxxxxx\0
+            * 
+            */
+
+            std::cerr << "get : " << buffer << std::endl;
 
             // decode & do something
-            if(buffer[0]!='g'){
-                buffer[0] = '0';
-            }else{
-                buffer[0] = 'a';
+            switch (buffer[0])
+            {
+            case 'q':
+                std::cerr << "get command : quit" << std::endl;
+                buffer[0] = 'q';
+                isEnd = true;
+                break;
+            case 'r':
+                std::cerr << "get command : reset" << std::endl;
+                buffer[0] = 'r';
+                break;
+            case 'm':
+                std::cerr << "get command : move" << std::endl;
+                buffer[0] = 'm';
+                break;
+            case 'f':
+                std::cerr << "get command : flip" << std::endl;
+                buffer[0] = 'f';
+                break;
+            case 'g':
+                std::cerr << "get command : genmove" << std::endl;
+                buffer[2] = '-';
+                break;
+            case 'k':
+                std::cerr << "get command : ready" << std::endl;
+                buffer[0] = 'k';
+                break;
+            case 't':
+                std::cerr << "get command : time setting" << std::endl;
+                buffer[0] = 't';
+                break;
+            case 'l':
+                std::cerr << "get command : time left" << std::endl;
+                buffer[0] = 'l';
+                break;
+            default:
+                std::cerr << "wrong command" << std::endl;
+                break;
             }
-            buffer[1] = '3';
-            buffer[2] = '-';
-            buffer[3] = 'b';
-            buffer[4] = '4';
-            buffer[5] = '\0';
+            buffer[8] = '\0';
             std::cout << "send : " << buffer << std::endl;
 
 
             // send reslut
-            rc = send(sd, buffer, sizeof(buffer), 0);
+            rc = send(sd, buffer, 9, 0);
             if (rc < 0)
             {
                 std::cerr << "send Failed" << std::endl;
                 break;
             }
+            
         }   
     }
     
