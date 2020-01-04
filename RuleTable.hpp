@@ -13,7 +13,7 @@ class RuleTable{
         static int JUMP_NUM[60];
         static int JUMP_DIR[60][4]; 
         static int ORI_ALIVE_PIECES[7];
-        static int DIR[4]; // {TOP, DOWN, LEFT, RIGHT }
+        static int DIR[4]; // {TOP, DOWN, LEFT, RIGHT}
         
 
         static void initRuleTable(){
@@ -36,7 +36,29 @@ class RuleTable{
         };
         
         static void initLegalEatArray(){
-
+            // 0 : 帥   1 : 仕   2 : 像   3 : 俥  4 : 瑪  5 : 炮   6 : 兵  7 : x
+            // 8 : 將   9 : 士  10 : 象  11 : 車 12 : 馬 13 : 包  14 : 卒  
+            // 16 : dark
+            // 17 : dead
+            for(int i = 0  ; i < 18 ; ++i){  // init
+                for(int j = 0 ; j < 18 ; ++j){
+                    LEGAL_EAT_ARRAY[i][j] = 0;
+                }
+            }
+            for(int i = 8 ; i < 14 ; ++i ) LEGAL_EAT_ARRAY[0][i] = 1; //帥
+            for(int i = 9 ; i < 15 ; ++i ) LEGAL_EAT_ARRAY[1][i] = 1; //仕
+            for(int i = 10 ; i < 15 ; ++i ) LEGAL_EAT_ARRAY[2][i] = 1; //像
+            for(int i = 11 ; i < 15 ; ++i ) LEGAL_EAT_ARRAY[3][i] = 1; //俥
+            for(int i = 12 ; i < 15 ; ++i ) LEGAL_EAT_ARRAY[4][i] = 1; //瑪
+            //for(int i = 8 ; i < 15 ; ++i ) LEGAL_EAT_ARRAY[5][i] = 1; //炮
+            LEGAL_EAT_ARRAY[6][14] = 1;  LEGAL_EAT_ARRAY[6][8] = 1; //兵
+            for(int i = 0 ; i < 6 ; ++i ) LEGAL_EAT_ARRAY[8][i] = 1; //將
+            for(int i = 1 ; i < 7 ; ++i ) LEGAL_EAT_ARRAY[9][i] = 1; //士
+            for(int i = 2 ; i < 7 ; ++i ) LEGAL_EAT_ARRAY[10][i] = 1; //象
+            for(int i = 3 ; i < 7 ; ++i ) LEGAL_EAT_ARRAY[11][i] = 1; //車
+            for(int i = 4 ; i < 7 ; ++i ) LEGAL_EAT_ARRAY[12][i] = 1; //馬
+            //for(int i = 0 ; i < 7 ; ++i ) LEGAL_EAT_ARRAY[13][i] = 1; //包
+            LEGAL_EAT_ARRAY[14][6] = 1;  LEGAL_EAT_ARRAY[14][0] = 1; //卒
         };
 
         static void initMoveNum(){
@@ -102,12 +124,6 @@ class RuleTable{
         static bool isInside(int pos){
             return !(pos<10 || pos>39 || pos%10==0 || pos%10==9);
         };
-
-        static bool canEat(int from, int to)
-        {
-            // 0 : 帥   1 : 仕
-            // 
-        }
 };
 
 /*

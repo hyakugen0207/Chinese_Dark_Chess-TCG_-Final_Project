@@ -4,6 +4,7 @@
 
 class Board{
     public:
+        
         Piece* board[60];
         bool ply;
         Piece pieces[34];
@@ -11,15 +12,16 @@ class Board{
         int numPiecesInList[2];
         int alivePieces[2][7]  = {{1,2,2,2,2,2,5},{1,2,2,2,2,2,5}};
         int numAlivePieces[2];
-
+        int convertPieceToPiecesIndex[18] = {0,1,3,5,7,9,11,-1,16,17,19,21,23,25,27,-1,32,-1};
+        const int convertPiecesIndexToPiece[35] = {0,1,1,2,2,3,3,4,4,5,5,6,6,6,6,6,8,9,9,10,10,11,11,12,12,13,13,14,14,14,14,14,16,17,17}; 
         std::vector<std::pair<char,char>> moveList();
+        void initBoard();
         bool move(char from, char to);
         bool flip(char pos, char piece);
         void removePiece(int index, bool ply); //removePieceFromPieceList
         int addPiece(Piece* piece, bool ply); //addPieceToPieceList
         int getScore();
         bool isLegalMove(int from, int to, bool ply);
-        void initBoard();
         bool firstMove(char pos, char piece);
 };
 

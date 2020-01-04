@@ -21,7 +21,7 @@ class HashNode{
 
 class ZobristHashTable{
     public :
-        static ULL randomValue[15][32];
+        static ULL randomValue[18][32];
         static ULL randomPlyValue[2];
         static ULL initValue;
         static void initStaticValue();

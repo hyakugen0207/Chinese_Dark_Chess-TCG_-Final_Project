@@ -16,7 +16,7 @@ ULL ZobristHashTable::updateHashValue(Board* board){
     value ^= randomPlyValue[int(board->ply)];
     //board
     for(int i = 0 ; i < 32 ; ++i){
-        if(board->board[i]!=nullptr){
+        if(board->board[i]->piece != 18){
             value ^= randomValue[int(board->board[i]->piece)][int(board->board[i]->position)];
         }
     }
