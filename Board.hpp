@@ -9,7 +9,7 @@ class Board{
         Piece pieces[34];
         Piece* pieceList[2][16];
         int numPiecesInList[2];
-        int alivePieces[2][7];
+        int alivePieces[2][7]  = {{1,2,2,2,2,2,5},{1,2,2,2,2,2,5}};
         int numAlivePieces[2];
 
         std::vector<std::pair<char,char>> moveList();

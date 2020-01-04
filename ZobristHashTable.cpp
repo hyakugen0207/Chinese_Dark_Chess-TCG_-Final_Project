@@ -1,7 +1,7 @@
 #include "ZobristHashTable.hpp"
 
 void ZobristHashTable::initStaticValue(){
-    for(int i = 0 ; i < 15 ; ++i){
+    for(int i = 0 ; i < 18 ; ++i){
         for(int j = 0 ; j < 32 ; ++j){
             randomValue[i][j] = num(my_random_engine);
         }
@@ -39,6 +39,6 @@ ULL ZobristHashTable::updateHashValue(ULL oldValue, char pieceFrom, char pieceFr
 
 ULL ZobristHashTable::updateHashValue(ULL oldValue, char pieceFlip, char pieceFromPos){
     return oldValue^randomPlyValue[0]^randomPlyValue[1]
-        ^randomValue[14][int(pieceFromPos)]
+        ^randomValue[16][int(pieceFromPos)]
         ^randomValue[int(pieceFlip)][int(pieceFromPos)];
 }; // flip
