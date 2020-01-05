@@ -137,6 +137,7 @@ void Board::initBoard(){
     moveListGenerator = new EarlyGame();
 };
 
+/*
 bool Board::firstMove(char pos, char piece){
     board[pos] = &(pieces[convertPieceToPiecesIndex[piece]]);
     board[pos]->dark = false;
@@ -145,6 +146,7 @@ bool Board::firstMove(char pos, char piece){
     ply = !(board[pos]->piece>>3);
     return true;
 };
+*/
 
 std::pair<char,char> Board::genMove(){
     for(int i = 0; i < 15 ; ++i){

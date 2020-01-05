@@ -152,7 +152,26 @@ int main(){
                 case 'g':
                 {
                     std::cerr << "(client) get command : genmove" << std::endl;
-                    std::pair<char,char> result = myBoard->genMove();
+                    std::pair<char,char> result;
+                    if(buffer[1]=='r')
+                    {
+                        myBoard->ply = 0;
+                        // alpha-beta scout
+                        result = myBoard->genMove(); // for debug
+                    }
+                    else if(buffer[1]=='b')
+                    {
+                        myBoard->ply = 1;
+                        // alpha-beta scout
+                        result = myBoard->genMove(); // for debug
+                    }
+                    else //first move
+                    {
+                        myBoard->setMoveList();
+                        std::vector<std::pair<char, char>> :: iterator iter = ++(*(myBoard->moveList)).begin(); //get second element
+                        result = (*iter);
+                    }
+                    
                     buffer[0] = (result.first/10)-1+'a';
                     buffer[1] = (result.first%10)+'0';
                     buffer[2] = '-';

@@ -6,6 +6,7 @@
 class EarlyGame : public IMoveListGenerator
 {
     public:
+        static const int flipPriority[32];
         void genMoveList(Board* board) const;
 };
 

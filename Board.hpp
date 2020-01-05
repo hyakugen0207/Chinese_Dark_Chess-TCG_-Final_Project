@@ -32,7 +32,7 @@ class Board{
         void setMoveList(); //Version 0.5.1
         bool isLegalMove(int from, int to, bool ply); //Version 0.5.1
         //缺genFlip
-        bool firstMove(char pos, char piece); //Version 0.4
+        //bool firstMove(char pos, char piece); //Version 0.4
 
         Board(){
 
