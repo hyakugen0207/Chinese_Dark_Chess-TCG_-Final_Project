@@ -51,6 +51,7 @@ void EarlyGame::genMoveList(Board* board) const{
                                 move.first = move.second = pos;
                                 break;
                             }
+                            pos += RuleTable::JUMP_DIR[myPiece->position][j];
                         }
                     }
                 }
@@ -84,7 +85,7 @@ void EarlyGame::genMoveList(Board* board) const{
                         int moveNum = RuleTable::MOVE_NUM[pos];
                         for(int j = 0 ; j < moveNum && canFlip ; ++j){
                             int targetPos = pos+RuleTable::MOVE_DIR[pos][j];
-                            if((board->board[targetPos]->piece>>3)==board->ply)
+                            if(!board->board[targetPos]->dark && (board->board[targetPos]->piece>>3)==board->ply)
                             {
                                 canFlip = false;
                                 break;
@@ -102,11 +103,12 @@ void EarlyGame::genMoveList(Board* board) const{
                                 {
                                     cross = true;
                                 }
-                                else if((board->board[targetPos]->piece>>3)==board->ply)
+                                else if(!board->board[targetPos]->dark && (board->board[targetPos]->piece>>3)==board->ply)
                                 {
                                     canFlip = false;
                                     break;
                                 }
+                                targetPos += RuleTable::JUMP_DIR[pos][j];
                             }
                         }
 
@@ -115,6 +117,16 @@ void EarlyGame::genMoveList(Board* board) const{
                             board->moveList->emplace_back(std::make_pair(pos,pos));
                             return;
                         }
+                    }
+                }
+
+                //if no save flip
+                for(int i = 0 ; i < 32 ; ++i){
+                    int pos = flipPriority[i];
+                    if(board->board[pos]->dark) // this pos is dark
+                    {
+                        board->moveList->emplace_back(std::make_pair(pos,pos));
+                        return;
                     }
                 }
             }
@@ -127,10 +139,65 @@ void EarlyGame::genMoveList(Board* board) const{
         }
         else
         {
-            //try to kill enemy's piece by flip or eat
-            
-        }
-        
+            std::pair<char,char> move;
+            bool getFlip = false;
+            bool getEat = false;
+            //try to kill enemy's piece by flip or eat 
+
+            //eat 
+
+
+            if(getEat)
+            {
+                board->moveList->emplace_back(std::make_pair(move.first,move.second));
+                return;
+            }
+
+            // 包 flip
+            for(int i = 0 ; i < board->numPiecesInList[!board->ply] && !getFlip ; ++i){
+                // 2020.01.05 先隨便找一隻翻包的位置 之後可以改
+                Piece* hisPiece = board->pieceList[!board->ply][i];
+
+                if((hisPiece->piece&7) != 5)
+                {
+                    //翻一個包可以吃的地方
+                    int jumpNum = RuleTable::JUMP_NUM[hisPiece->position];
+                    for(int j = 0 ; j < jumpNum && !getFlip ; ++j){ 
+                        bool cross = false;
+                        int pos = hisPiece->position+RuleTable::JUMP_DIR[hisPiece->position][j];
+                        while(board->board[pos]->inside)
+                        {
+                            if(!cross && board->board[pos]->piece!=17)
+                            {
+                                cross = true;
+                            }
+                            else if(board->board[pos]->dark)
+                            {
+                                getFlip = true;
+                                move.first = move.second = pos;
+                                break;
+                            }
+                            pos += RuleTable::JUMP_DIR[hisPiece->position][j];
+                        }
+                    }
+                }   
+            }
+
+            if(getFlip)
+            {
+                board->moveList->emplace_back(std::make_pair(move.first,move.second));
+                return;
+            }
+
+            //no eat and killer flip 隨便翻一個
+            for(int i = 0 ; i < 32 ; ++i){
+                int pos = flipPriority[i];
+                if(board->board[pos]->dark) // this pos is dark
+                {
+                    board->moveList->emplace_back(std::make_pair(pos,pos));
+                    return;
+                }
+            }
+        }        
     }    
-    
 };
