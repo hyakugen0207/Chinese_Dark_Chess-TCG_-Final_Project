@@ -2,15 +2,18 @@
 #ifndef IMOVELISTGENERATOR
 #define IMOVELISTGENERATOR
 #include <vector>
-#include "Board.hpp"
-#include "EarlyGame.hpp"
-#include "EnemyWithKing.hpp"
-#include "EnemyWithoutKing.hpp"
+
+class Board;
+class RuleTable;
 
 class IMoveListGenerator
 {
     public:
         virtual void genMoveList(Board* board) const = 0;
 };
+
+#include "EarlyGame.hpp"
+#include "EnemyWithKing.hpp"
+#include "EnemyWithoutKing.hpp"
 
 #endif //IMOVELISTGENERATOR

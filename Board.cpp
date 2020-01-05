@@ -1,4 +1,5 @@
 #include "Board.hpp"
+#include <iostream>
 
 const int Board::oriAlivePieces[7] = {1,2,2,2,2,2,5};
 const int Board::oriConvertPieceToPiecesIndex[18] = {0,1,3,5,7,9,11,-1,16,17,19,21,23,25,27,-1,32,-1};
@@ -27,12 +28,14 @@ bool Board::move(char from, char to){
 };
 
 bool Board::flip(char pos, char piece){
+    std::cerr << "Debug : in flip" << std::endl;
     board[pos] = &(pieces[convertPieceToPiecesIndex[piece]]);
     convertPieceToPiecesIndex[piece]++;
     board[pos]->dark = false;
     board[pos]->position = pos;
     board[pos]->inside = true;
     board[pos]->indexInPieceList = addPiece(board[pos], board[pos]->piece>>3);
+    std::cerr << "Debug : in addPiece numPiecesInList is " << numPiecesInList[board[pos]->piece>>3] << std::endl;
     ply = !ply;
     return true;
 };
@@ -68,6 +71,7 @@ void Board::removePiece(int index, bool ply){
 };
 
 int Board::addPiece(Piece* piece, bool ply){
+    std::cerr << "Debug : in addPiece" << std::endl;
     pieceList[ply][numPiecesInList[ply]]=piece;
     return numPiecesInList[ply]++;
 };
@@ -149,12 +153,26 @@ bool Board::firstMove(char pos, char piece){
 */
 
 std::pair<char,char> Board::genMove(){
+
+    setMoveListGenerator();
+    setMoveList();
+
+    if(moveList[0].first==0)
+    {
+        // early move
+        return moveList[1];
+    }
+
     for(int i = 0; i < 15 ; ++i){
         if(board[i]->dark == true){
             return std::make_pair(char(i),char(i));
         }
     }
     return std::make_pair(-1,-1);
+};
+
+void Board::setMoveListGenerator(){
+
 };
 
 void Board::setMoveList(){

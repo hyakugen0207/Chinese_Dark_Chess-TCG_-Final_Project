@@ -77,6 +77,7 @@ char convertToPiece(char command){
 
 int main(){
     RuleTable::initRuleTable();
+    RuleTable::print();
     //ZobristHashTable* hashTable = new ZobristHashTable();
     bool isEnd = false;
     Board* myBoard = new Board();
@@ -167,9 +168,7 @@ int main(){
                     }
                     else //first move
                     {
-                        myBoard->setMoveList();
-                        std::vector<std::pair<char, char>> :: iterator iter = ++(*(myBoard->moveList)).begin(); //get second element
-                        result = (*iter);
+                        result = myBoard->genMove();
                     }
                     
                     buffer[0] = (result.first/10)-1+'a';

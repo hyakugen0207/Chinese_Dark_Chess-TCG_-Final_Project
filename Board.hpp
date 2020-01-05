@@ -11,7 +11,7 @@ class Board{
         static const int oriConvertPieceToPiecesIndex[18];
         static const int convertPiecesIndexToPiece[35]; 
         IMoveListGenerator* moveListGenerator;
-        std::vector<std::pair<char, char>>* moveList;
+        std::vector<std::pair<char, char>> moveList;
         Piece* board[60];
         bool ply;
         Piece pieces[35];
@@ -31,7 +31,6 @@ class Board{
         void setMoveListGenerator(); // set by current board
         void setMoveList(); //Version 0.5.1
         bool isLegalMove(int from, int to, bool ply); //Version 0.5.1
-        //缺genFlip
         //bool firstMove(char pos, char piece); //Version 0.4
 
         Board(){
