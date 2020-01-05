@@ -1,5 +1,5 @@
-//#include "myDefine.hpp"
-//#include "Board.hpp"
+#include "myDefine.hpp"
+#include "Board.hpp"
 //#include "ZobristHashTable.hpp"
 
 #include <stdio.h>
@@ -8,7 +8,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/un.h>
+#include <signal.h> 
 
 #define SERVER_PATH     "/tmp/server"
 #define BUFFER_LENGTH    9
@@ -36,10 +38,53 @@ int recvCommand(char* buffer, int sd){
     return rc;
 }
 
-int main(){
+char convertToPiece(char command){
+    switch (command)
+    {
+    case 'K':
+        return 0;
+    case 'G':
+        return 1;
+    case 'M':
+        return 2;
+    case 'R':
+        return 3;
+    case 'N':
+        return 4;
+    case 'C':
+        return 5;
+    case 'P':
+        return 6;
+    case 'k':
+        return 8;
+    case 'g':
+        return 9;
+    case 'm':
+        return 10;
+    case 'r':
+        return 11;
+    case 'n':
+        return 12;
+    case 'c':
+        return 13;
+    case 'p':
+        return 14;
+    default:
+        return -1;
+    }
+}
 
+void sigint();
+void sigquit();
+void sigkill();
+
+int main(){
+    signal(SIGINT, (void (*)(int))sigint);
+    signal(SIGTERM, (void (*)(int))sigquit);
+    signal(SIGPIPE, (void (*)(int))sigkill);
     //ZobristHashTable* hashTable = new ZobristHashTable();
     bool isEnd = false;
+    Board* myBoard = new Board();
 
     while(!isEnd){
         // socket
@@ -61,7 +106,9 @@ int main(){
         while(rc<0)
         {
             //pondering
-            std::cerr << "pondering" << std::endl;
+            if(getppid()==1){
+                exit(0);
+            }
             sleep(1);
             rc = connect(sd, (struct sockaddr *)&serveraddr, SUN_LEN(&serveraddr));
         }
@@ -74,7 +121,7 @@ int main(){
             *   quit          : qxxxxxxx\0 ->  re : qxxxxxxx\0
             *   reset_board   : rxxxxxxx\0 ->  re : rxxxxxxx\0
             *   move          : ma2-b3xx\0 ->  re : mxxxxxxx\0
-            *   flip          : fa2(b3)x\0 ->  re : fxxxxxxx\0
+            *   flip          : fa2(G)xx\0 ->  re : fxxxxxxx\0
             *   genmove       : grxxxxxx\0 ->  re : a1-d8xxx\0
             *   ready         : kxxxxxxx\0 ->  re : kxxxxxxx\0
             *   time_settings : txxxxxxx\0 ->  re : txxxxxxx\0
@@ -82,50 +129,60 @@ int main(){
             * 
             */
 
-            std::cerr << "get : " << buffer << std::endl;
+            std::cerr << "(client) get : " << buffer << std::endl;
 
             // decode & do something
             switch (buffer[0])
             {
-            case 'q':
-                std::cerr << "get command : quit" << std::endl;
-                buffer[0] = 'q';
-                isEnd = true;
-                break;
-            case 'r':
-                std::cerr << "get command : reset" << std::endl;
-                buffer[0] = 'r';
-                break;
-            case 'm':
-                std::cerr << "get command : move" << std::endl;
-                buffer[0] = 'm';
-                break;
-            case 'f':
-                std::cerr << "get command : flip" << std::endl;
-                buffer[0] = 'f';
-                break;
-            case 'g':
-                std::cerr << "get command : genmove" << std::endl;
-                buffer[2] = '-';
-                break;
-            case 'k':
-                std::cerr << "get command : ready" << std::endl;
-                buffer[0] = 'k';
-                break;
-            case 't':
-                std::cerr << "get command : time setting" << std::endl;
-                buffer[0] = 't';
-                break;
-            case 'l':
-                std::cerr << "get command : time left" << std::endl;
-                buffer[0] = 'l';
-                break;
-            default:
-                std::cerr << "wrong command" << std::endl;
-                break;
+                case 'q':
+                    std::cerr << "(client) get command : quit" << std::endl;
+                    buffer[0] = 'q';
+                    isEnd = true;
+                    break;
+                case 'r':
+                    std::cerr << "(client) get command : reset" << std::endl;
+                    buffer[0] = 'r';
+                    myBoard->initBoard();
+                    break;
+                case 'm':
+                    std::cerr << "(client) get command : move" << std::endl;
+                    myBoard->move((buffer[1]-'a'+1)*10+(buffer[2]-'0'),(buffer[4]-'a'+1)*10+(buffer[5]-'0'));
+                    buffer[0] = 'm';
+                    break;
+                case 'f':
+                    std::cerr << "(client) get command : flip" << std::endl;
+                    myBoard->flip((buffer[1]-'a'+1)*10+(buffer[2]-'0'),convertToPiece(buffer[4]));
+                    buffer[0] = 'f';
+                    break;
+                case 'g':
+                {
+                    std::cerr << "(client) get command : genmove" << std::endl;
+                    std::pair<char,char> result = myBoard->genMove();
+                    buffer[0] = (result.first/10)-1+'a';
+                    buffer[1] = (result.first%10)+'0';
+                    buffer[2] = '-';
+                    buffer[3] = (result.second/10)-1+'a';
+                    buffer[4] = (result.second%10)+'0';
+                    break;
+                }
+                case 'k':
+                    std::cerr << "(client) get command : ready" << std::endl;
+                    myBoard->initBoard();
+                    buffer[0] = 'k';
+                    break;
+                case 't':
+                    std::cerr << "(client) get command : time setting" << std::endl;
+                    buffer[0] = 't';
+                    break;
+                case 'l':
+                    std::cerr << "(client) get command : time left" << std::endl;
+                    buffer[0] = 'l';
+                    break;
+                default:
+                    std::cerr << "wrong command" << std::endl;
             }
             buffer[8] = '\0';
-            std::cout << "send : " << buffer << std::endl;
+            std::cerr << "(client) send : " << buffer << std::endl;
 
 
             // send reslut
@@ -159,12 +216,23 @@ int main(){
             
         //none
             //do ponder
-
-
-
-
-
-
-
     return 0;
 }
+
+void sigint()
+{     
+    printf("CHILD: I have received a SIGINT\n"); 
+    exit(0);
+};
+
+void sigquit()
+{     
+    printf("CHILD: I have received a SIGQUIT\n"); 
+    exit(0);
+};
+
+void sigkill()
+{     
+    printf("CHILD: I have received a SIGPIPE\n"); 
+    exit(0);
+};

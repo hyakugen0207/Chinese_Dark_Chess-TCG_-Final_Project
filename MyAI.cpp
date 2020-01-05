@@ -685,7 +685,7 @@ bool MyAI::sendToAI(char* command, char* response){
 		sleep(1);
 		rc = bind(sd, (struct sockaddr *)&serveraddr, SUN_LEN(&serveraddr));
     }
-	fprintf(stderr, "bind() ok");
+	fprintf(stderr, "bind() ok\n");
     rc = listen(sd, 10);
     if (rc< 0)
     {

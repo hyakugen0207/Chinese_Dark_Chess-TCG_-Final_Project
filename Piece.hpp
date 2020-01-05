@@ -5,4 +5,4 @@ class Piece{
         bool inside;
         bool dark;
         int indexInPieceList;
-}
+};

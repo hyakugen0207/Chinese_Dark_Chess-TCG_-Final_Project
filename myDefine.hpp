@@ -1,3 +1,5 @@
+
+
 #include <random> // default_random_engine
 #define HASH_NODE_NUM 1073741824 //2^32
 

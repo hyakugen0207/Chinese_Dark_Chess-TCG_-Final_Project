@@ -63,7 +63,7 @@ class RuleTable{
 
         static void initMoveNum(){
             for(int i = 0 ; i < 60 ; ++i){
-                if( i<10 || i>39 || i%10==0 || i%10==9) MOVE_NUM[i] = 0;
+                if( i<10 || i>49 || i%10==0 || i%10==9) MOVE_NUM[i] = 0;
                 else
                 {
                     if(i==11 || i==18 || i==31 || i==38) MOVE_NUM[i] = 2;
@@ -85,7 +85,7 @@ class RuleTable{
 
         static void initJumpNum(){
             for(int i = 0 ; i < 60 ; ++i){
-                if( i<10 || i>39 || i%10==0 || i%10==9) JUMP_NUM[i] = 0;
+                if( i<10 || i>49 || i%10==0 || i%10==9) JUMP_NUM[i] = 0;
                 else
                 {
                     switch (i%10)
@@ -122,7 +122,7 @@ class RuleTable{
         };
 
         static bool isInside(int pos){
-            return !(pos<10 || pos>39 || pos%10==0 || pos%10==9);
+            return !(pos<10 || pos>49 || pos%10==0 || pos%10==9);
         };
 };
 

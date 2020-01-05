@@ -1,5 +1,9 @@
 #include "Board.hpp"
 
+const int Board::oriAlivePieces[7] = {1,2,2,2,2,2,5};
+const int Board::oriConvertPieceToPiecesIndex[18] = {0,1,3,5,7,9,11,-1,16,17,19,21,23,25,27,-1,32,-1};
+const int Board::convertPiecesIndexToPiece[35] = {0,1,1,2,2,3,3,4,4,5,5,6,6,6,6,6,8,9,9,10,10,11,11,12,12,13,13,14,14,14,14,14,16,17,18};
+
 bool Board::move(char from, char to){
     // 假設傳進來的一定legal
 
@@ -90,63 +94,72 @@ bool Board::isLegalMove(int from, int to, bool ply){
 
 void Board::initBoard(){
 
-//init piece
-    // outside
-    pieces[34].position = 0;
-    pieces[34].inside = false;
-    pieces[34].dark = false;
-    pieces[34].indexInPieceList = -1;
-    pieces[34].piece = 17;
-    // empty
-    pieces[33].position = 0;
-    pieces[33].inside = true;
-    pieces[33].dark = false;
-    pieces[33].indexInPieceList = -1;
-    pieces[33].piece = 17;
-    // dark
-    pieces[32].position = 0;
-    pieces[32].inside = true;
-    pieces[32].dark = true;
-    pieces[32].indexInPieceList = -1;
-    pieces[32].piece = 16;
-    //others
-    for(int i = 0 ; i < 32 ; ++i){
+    //init piece
+    for(int i = 0 ; i < 35 ; ++i){
         pieces[i].position = -1;
         pieces[i].inside = true;
         pieces[i].dark = true;
         pieces[i].indexInPieceList = -1;
         pieces[i].piece = convertPiecesIndexToPiece[i];
     }
-
-
+    // empty
+    pieces[33].dark = false;
+    // outside
+    pieces[34].inside = false;
+    pieces[34].dark = false;
+    
 
     //init board
     for(int i = 0; i < 60 ; ++i){
-        if(i<10 || i > 39 || i%10==0 || i%10==9){
+        if(i<10 || i > 49 || i%10==0 || i%10==9){
             board[i] = &pieces[34];
-            board[i]->position = i;
-            board[i]->inside = false;
-            board[i]->dark = false;
-            board[i]->indexInPieceList = -1;
-            board[i]->piece = 18;
         }
         else
         {
             board[i] = &pieces[32];
-            board[i]->position = i;
-            board[i]->inside = true;
-            board[i]->dark = false;
-            board[i]->indexInPieceList = -1;
-            board[i]->piece = 16;
         }
     }
-    //只有32不會被指到 // 0~31各指一格 
+
+    //pieceList[2][16]
+    for(int i = 0 ; i < 2 ; ++i){
+        for(int j = 0 ; j < 16 ; ++j){
+            pieceList[i][j] = nullptr;
+        }
+    }
+
+    //numPiecesInList
+    numPiecesInList[0] = numPiecesInList[1] = 0;
+
+    //alivePieces
+    for(int i = 0; i < 2 ; ++i){
+        for(int j = 0 ; j < 7 ; ++j){
+            alivePieces[i][j] = oriAlivePieces[j];
+        }
+    }
+
+    //numAlivePieces
+    numAlivePieces[0] = numAlivePieces[1] = 16;
+
+    //convertPieceToPiecesIndex
+    for(int i = 0 ; i < 18 ; ++i){
+        convertPieceToPiecesIndex[i] = oriConvertPieceToPiecesIndex[i];
+    }
 };
 
 bool Board::firstMove(char pos, char piece){
+    board[pos] = &(pieces[convertPieceToPiecesIndex[piece]]);
     board[pos]->dark = false;
-    board[pos]->piece = piece;
+    board[pos]->inside = true;
     board[pos]->indexInPieceList = addPiece(board[pos], board[pos]->piece>>3);
     ply = !(board[pos]->piece>>3);
     return true;
+};
+
+std::pair<char,char> Board::genMove(){
+    for(int i = 0; i < 15 ; ++i){
+        if(board[i]->dark == true){
+            return std::make_pair(char(i),char(i));
+        }
+    }
+    return std::make_pair(-1,-1);
 };

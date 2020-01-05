@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/un.h>
 #include <iostream>
+#include <signal.h> 
 
 // commands enumerate
 enum COMMANDS{
@@ -51,6 +52,25 @@ static bool (MyAI::*functions[])(const char* [], char*) = {
   &MyAI::showboard
 };
 
+void sigint()
+{     
+    printf("CHILD: I have received a SIGINT\n"); 
+    exit(0);
+};
+
+void sigquit()
+{     
+    printf("CHILD: I have received a SIGQUIT\n"); 
+    exit(0);
+};
+
+void sigkill()
+{     
+    printf("PARENT: I have received a SIGPIPE\n"); 
+    exit(0);
+};
+
+
 
 int main(){
   char read[1024], write[1024], output[1024], *token;
@@ -58,7 +78,9 @@ int main(){
   int id;
   bool isFailed;
   MyAI myai;
-
+  signal(SIGINT, (void (*)(int))sigint);
+  signal(SIGQUIT, (void (*)(int))sigquit);
+  signal(SIGPIPE, (void (*)(int))sigkill);
   const std::string AI_PATH = "./SHIRO";
 
   int pid = fork();
@@ -117,5 +139,7 @@ int main(){
 
   }while(id != QUIT);
   
+  fprintf(stderr, "fffff");
   return 0;
 }
+
