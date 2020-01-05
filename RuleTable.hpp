@@ -1,5 +1,3 @@
-#include "myDefine.hpp"
-
 #define TOP -10
 #define DOWN 10
 #define LEFT -1

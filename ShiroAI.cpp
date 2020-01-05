@@ -74,14 +74,9 @@ char convertToPiece(char command){
     }
 }
 
-void sigint();
-void sigquit();
-void sigkill();
 
 int main(){
-    signal(SIGINT, (void (*)(int))sigint);
-    signal(SIGTERM, (void (*)(int))sigquit);
-    signal(SIGPIPE, (void (*)(int))sigkill);
+    RuleTable::initRuleTable();
     //ZobristHashTable* hashTable = new ZobristHashTable();
     bool isEnd = false;
     Board* myBoard = new Board();
@@ -218,21 +213,3 @@ int main(){
             //do ponder
     return 0;
 }
-
-void sigint()
-{     
-    printf("CHILD: I have received a SIGINT\n"); 
-    exit(0);
-};
-
-void sigquit()
-{     
-    printf("CHILD: I have received a SIGQUIT\n"); 
-    exit(0);
-};
-
-void sigkill()
-{     
-    printf("CHILD: I have received a SIGPIPE\n"); 
-    exit(0);
-};

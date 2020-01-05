@@ -74,22 +74,9 @@ int Board::addPiece(Piece* piece, bool ply){
 
 bool Board::isLegalMove(int from, int to, bool ply){
     //假設 from -> to 是合理的移動/吃/跳/翻牌的走法
-    if(from==to) // is flip
-    {
-        if(board[from]->dark)
-        {
-            return true;
-        }
-    }
-    else // other
-    {
-        if(board[from]->piece != 17 && (((board[from]->piece>>3) == ply))) // is my piece
-        { 
-            // return RuleTable::legalEatArray[board[from]->piece][board[to]->piece];
-            return true;   
-        }
-    }
-    return false;
+    //假設 from 一定是自已的棋
+    //不考慮翻牌
+    return RuleTable::LEGAL_EAT_ARRAY[board[from]->piece][board[to]->piece];
 };
 
 void Board::initBoard(){
@@ -144,6 +131,10 @@ void Board::initBoard(){
     for(int i = 0 ; i < 18 ; ++i){
         convertPieceToPiecesIndex[i] = oriConvertPieceToPiecesIndex[i];
     }
+
+    //moveListGenerator
+    delete moveListGenerator;
+    moveListGenerator = new EarlyGame();
 };
 
 bool Board::firstMove(char pos, char piece){
@@ -162,4 +153,8 @@ std::pair<char,char> Board::genMove(){
         }
     }
     return std::make_pair(-1,-1);
+};
+
+void Board::setMoveList(){
+    moveListGenerator->genMoveList(this);
 };
