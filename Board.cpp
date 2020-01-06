@@ -1,5 +1,15 @@
 #include "Board.hpp"
 #include <iostream>
+#include <random>
+
+#include "EarlyGame.hpp"
+#include "MidGame.hpp"
+#include "EnemyWithKing.hpp"
+#include "EnemyWithoutKing.hpp"
+#include "BothWithoutKing.hpp"
+#include "WithoutKing.hpp"
+#include "RandomMove.hpp"
+
 
 const int Board::oriAlivePieces[7] = {1,2,2,2,2,2,5};
 const int Board::oriConvertPieceToPiecesIndex[18] = {0,1,3,5,7,9,11,-1,16,17,19,21,23,25,27,-1,32,-1};
@@ -163,12 +173,9 @@ void Board::initBoard(){
         }
     }
 
-
-    
-
     //moveListGenerator
     delete moveListGenerator;
-    moveListGenerator = new RandomMove();
+    moveListGenerator = new EnemyWithKing();
 };
 
 /*
@@ -193,11 +200,20 @@ std::pair<char,char> Board::genMove(){
         return moveList[1];
     }
 
-    for(int i = 0; i < 15 ; ++i){
-        if(board[i]->dark == true){
-            return std::make_pair(char(i),char(i));
-        }
+    for(int i = 0; i < moveList.size() ; ++i){
+        std::cerr << "Index : " << i << "  move : " << int(moveList[i].first) << "," << int(moveList[i].second) << std::endl;
     }
+
+    if(moveList.size()>=3)
+    {
+        return moveList[rand()%3];
+    }
+    else if(moveList.size()>0)
+    {
+        return moveList[0];
+    }
+    
+
     return std::make_pair(-1,-1);
 };
 

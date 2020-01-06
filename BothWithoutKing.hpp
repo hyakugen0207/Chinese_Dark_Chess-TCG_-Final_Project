@@ -1,9 +1,9 @@
-#ifndef ENEMYWITHOUTKING
-#define ENEMYWITHOUTKING
+#ifndef BOTHWITHOUTKING
+#define BOTHWITHOUTKING
 
 #include "MidGame.hpp"
 
-class EnemyWithoutKing : public MidGame
+class BothWithoutKing : public MidGame
 {
     public:
         static const char moveOrder[7];
@@ -15,4 +15,4 @@ class EnemyWithoutKing : public MidGame
 };
 
 
-#endif //ENEMYWITHOUTKING
+#endif //BOTHWITHOUTKING

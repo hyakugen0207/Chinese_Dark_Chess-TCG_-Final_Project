@@ -1,10 +1,11 @@
-#include "IMoveListGenerator.hpp"
+#include "MoveListGenerator.hpp"
 #include <stack>
 #include "Board.hpp"
 #include "Piece.hpp"
 #include "RuleTable.hpp"
 
-void IMoveListGenerator::genPossibleMoveAndEat(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece){
+
+void MoveListGenerator::genPossibleMoveAndEat(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece){
     //假設piece為0~31之間的"真實子"
     
     int p = piece->piece;
@@ -59,7 +60,7 @@ void IMoveListGenerator::genPossibleMoveAndEat(Board* board, std::vector<std::pa
     }
 };
 
-void IMoveListGenerator::genPossibleMove(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece){
+void MoveListGenerator::genPossibleMove(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece){
     //假設piece為0~31之間的"真實子"
     
     int p = piece->piece;
@@ -74,7 +75,7 @@ void IMoveListGenerator::genPossibleMove(Board* board, std::vector<std::pair<cha
     }
 };
 
-void IMoveListGenerator::genPossibleEat(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece){
+void MoveListGenerator::genPossibleEat(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece){
     
     int p = piece->piece;
     int pos = piece->position;
@@ -119,7 +120,7 @@ void IMoveListGenerator::genPossibleEat(Board* board, std::vector<std::pair<char
     }
 };
 
-void IMoveListGenerator::genPossibleFlip(Board* board, std::vector<std::pair<char, char>>* moveVector){
+void MoveListGenerator::genPossibleFlip(Board* board, std::vector<std::pair<char, char>>* moveVector){
     for(int i = 11 ; i < 49 ; ++i){
         if(board->board[i]->dark){
             moveVector->emplace_back(std::make_pair(i,i));

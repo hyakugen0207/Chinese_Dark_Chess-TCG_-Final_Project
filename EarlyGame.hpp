@@ -1,13 +1,14 @@
 #ifndef EARLYGAME
 #define EARLYGAME
 
-#include "IMoveListGenerator.hpp"
+#include "MoveListGenerator.hpp"
 
-class EarlyGame : public IMoveListGenerator
+class EarlyGame : public MoveListGenerator
 {
     public:
         static const int flipPriority[32];
         void genMoveList(Board* board) const;
+        int getScore(Board* board) const;
 };
 
 #endif //EARLYGAME

@@ -2,7 +2,7 @@
 #define BOARD
 #include "Piece.hpp"
 #include "RuleTable.hpp"
-#include "IMoveListGenerator.hpp"
+#include "MoveListGenerator.hpp"
 #include <vector>
 
 #define RK 0
@@ -36,7 +36,7 @@ class Board{
         static const int convertPiecesIndexToPiece[35]; 
         static const int oriDarkPieceNum[2][7];
         static const double possibilityHelper[33];
-        IMoveListGenerator* moveListGenerator;
+        MoveListGenerator* moveListGenerator;
         std::vector<std::pair<char, char>> moveList;
         Piece* board[60];
         bool ply;
@@ -55,7 +55,6 @@ class Board{
         bool flip(char pos, char piece); // Version 0.4.3
         void removePiece(int index, bool ply); //removePieceFromPieceList Version 0.4.3
         int addPiece(Piece* piece, bool ply); //addPieceToPieceList Version 0.4.3
-        int getScore();
         
         std::pair<char,char> genMove();
         void setMoveListGenerator(); // set by current board

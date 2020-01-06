@@ -1,9 +1,9 @@
 #ifndef RANDOMMOVE
 #define RANDOMMOVE
 
-#include "IMoveListGenerator.hpp"
+#include "MoveListGenerator.hpp"
 
-class RandomMove : public IMoveListGenerator
+class RandomMove : public MoveListGenerator
 {
     public:
         void genMoveList(Board* board) const;
