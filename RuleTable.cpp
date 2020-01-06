@@ -35,11 +35,11 @@ void RuleTable::initLegalEatArray(){
     // 16 : dark
     // 17 : dead
     for(int i = 0  ; i < 18 ; ++i){  // init
-        for(int j = 0 ; j < 17 ; ++j){
+        for(int j = 0 ; j < 18 ; ++j){
             LEGAL_EAT_ARRAY[i][j] = 0;
         }
-        if(i!=7 && i<15) LEGAL_EAT_ARRAY[i][17] = 1;
-        else LEGAL_EAT_ARRAY[i][17] = 0;
+        //if(i!=7 && i<15) LEGAL_EAT_ARRAY[i][17] = 1;
+        //else LEGAL_EAT_ARRAY[i][17] = 0;
     }
 
     

@@ -1,3 +1,6 @@
+#ifndef PIECE
+#define PIECE
+
 class Piece{
     public:
         char position;
@@ -6,3 +9,5 @@ class Piece{
         bool dark;
         int indexInPieceList;
 };
+
+#endif //PIECE

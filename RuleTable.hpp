@@ -20,6 +20,7 @@ class RuleTable{
 
         static void initRuleTable();
         static void print();
+        static bool isInside(int pos);
 
     private:
 
@@ -30,7 +31,7 @@ class RuleTable{
         static void initJumpNum();
         static void initJumpDir();
         static void initOriAlivePieces();
-        static bool isInside(int pos);
+        
 };
 
 #endif //RULETABLE

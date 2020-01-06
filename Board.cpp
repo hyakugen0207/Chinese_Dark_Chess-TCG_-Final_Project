@@ -4,7 +4,19 @@
 const int Board::oriAlivePieces[7] = {1,2,2,2,2,2,5};
 const int Board::oriConvertPieceToPiecesIndex[18] = {0,1,3,5,7,9,11,-1,16,17,19,21,23,25,27,-1,32,-1};
 const int Board::convertPiecesIndexToPiece[35] = {0,1,1,2,2,3,3,4,4,5,5,6,6,6,6,6,8,9,9,10,10,11,11,12,12,13,13,14,14,14,14,14,16,17,18};
+const int Board::oriDarkPieceNum[2][7] = {{1,2,2,2,2,2,5},{1,2,2,2,2,2,5}};
+const double Board::possibilityHelper[33] = { 
+    0, 1, 0.5, 0.333, 0.25, 0.2, 0.167,  0.143, 0.125, 0.111, 0.1,
+    0.091, 0.0833, 0.0769, 0.0714, 0.0667, 0.0625, 0.0588, 0.0556, 0.0526, 0.05,
+    0.0476, 0.0455, 0.0435, 0.0417, 0.04, 0.0385, 0.037, 0.0357, 0.0345, 0.0333,
+    0.0323, 0.03125};
 
+/*
+    0, 0.03125, 0.0625, 0.09375, 0.125, 0.15625, 0.1875, 0.21875, 
+    0.25, 0.28125, 0.3125, 0.34375, 0.375, 0.40625, 0.4375, 0.46875, 
+    0.5, 0.53125, 0.5625, 0.59375, 0.625, 0.65625, 0.6875, 0.71875, 
+    0.75, 0.78125, 0.8125, 0.84375, 0.875, 0.90625, 0.9375, 0.96875
+*/
 bool Board::move(char from, char to){
     // 假設傳進來的一定legal
 
@@ -20,8 +32,10 @@ bool Board::move(char from, char to){
         board[to]->piece = 17; // dead
         board[to]->inside = false;
     }
+    Piece* tmp = board[to];
     board[to] = board[from]; 
-    board[from] = &(pieces[33]);
+    board[from] = tmp;
+    board[from]->position = from;
     board[to]->position = to;
     ply = !ply;
     return true;
@@ -35,6 +49,9 @@ bool Board::flip(char pos, char piece){
     board[pos]->position = pos;
     board[pos]->inside = true;
     board[pos]->indexInPieceList = addPiece(board[pos], board[pos]->piece>>3);
+    darkPieceNumAll--;
+    darkPieceNum[piece>>3][piece&7]--;
+    updateFlipPossibility();
     std::cerr << "Debug : in addPiece numPiecesInList is " << numPiecesInList[board[pos]->piece>>3] << std::endl;
     ply = !ply;
     return true;
@@ -135,10 +152,23 @@ void Board::initBoard(){
     for(int i = 0 ; i < 18 ; ++i){
         convertPieceToPiecesIndex[i] = oriConvertPieceToPiecesIndex[i];
     }
+    //darkPieceNumAll
+    darkPieceNumAll = 32;
+
+    //darkPieceNum  flipPossibility
+    for(int i = 0 ; i < 2 ; ++i){
+        for(int j = 0 ; j < 7 ; ++j){
+            darkPieceNum[i][j] = oriDarkPieceNum[i][j];
+            flipPossibility[i][j] = darkPieceNum[i][j]*possibilityHelper[darkPieceNumAll];
+        }
+    }
+
+
+    
 
     //moveListGenerator
     delete moveListGenerator;
-    moveListGenerator = new EarlyGame();
+    moveListGenerator = new RandomMove();
 };
 
 /*
@@ -177,4 +207,12 @@ void Board::setMoveListGenerator(){
 
 void Board::setMoveList(){
     moveListGenerator->genMoveList(this);
+};
+
+void Board::updateFlipPossibility(){
+    for(int i = 0 ; i < 2 ; ++i){
+        for(int j = 0 ; j < 7 ; ++j){
+            flipPossibility[i][j] = darkPieceNum[i][j]*possibilityHelper[darkPieceNumAll];
+        }
+    }
 };
