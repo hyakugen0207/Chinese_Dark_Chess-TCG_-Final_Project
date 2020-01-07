@@ -229,3 +229,76 @@ void Board::updateFlipPossibility(){
         }
     }
 };
+
+Board::Board(Board* oldBoard){
+
+    //pieceList[2][16]
+    for(int i = 0 ; i < 2 ; ++i){
+        for(int j = 0 ; j < 16 ; ++j){
+            pieceList[i][j] = nullptr;
+        }
+    }
+
+    //copy piece and put it to board and pieceList
+    for(int i = 0 ; i < 35 ; ++i){
+        pieces[i].position = oldBoard->pieces[i].position;
+        pieces[i].inside = oldBoard->pieces[i].inside;
+        pieces[i].dark = oldBoard->pieces[i].dark;
+        pieces[i].indexInPieceList = oldBoard->pieces[i].indexInPieceList;
+        pieces[i].piece = oldBoard->pieces[i].piece;
+        board[pieces[i].position] = &pieces[i];
+        pieceList[pieces[i].piece>>3][pieces[i].indexInPieceList] = &pieces[i];
+    }
+
+    //copy numPiecesInList
+    numPiecesInList[0] = oldBoard->numPiecesInList[0];
+    numPiecesInList[1] = oldBoard->numPiecesInList[1];
+
+    //copy alivePieces
+    for(int i = 0; i < 2 ; ++i){
+        for(int j = 0 ; j < 7 ; ++j){
+            alivePieces[i][j] = oldBoard->alivePieces[i][j];
+        }
+    }
+
+    //copy numAlivePieces
+    numAlivePieces[0] = oldBoard->numAlivePieces[0];
+    numAlivePieces[1] = oldBoard->numAlivePieces[1];
+
+    //copy convertPieceToPiecesIndex
+    for(int i = 0 ; i < 18 ; ++i){
+        convertPieceToPiecesIndex[i] = oldBoard->convertPieceToPiecesIndex[i];
+    }
+
+    //copy darkPieceNumAll
+    darkPieceNumAll = oldBoard->darkPieceNumAll;
+
+    //darkPieceNum  flipPossibility
+    for(int i = 0 ; i < 2 ; ++i){
+        for(int j = 0 ; j < 7 ; ++j){
+            darkPieceNum[i][j] = oldBoard->darkPieceNum[i][j];
+            flipPossibility[i][j] = oldBoard->flipPossibility[i][j];
+        }
+    }
+
+
+    //copy board (empty / dark / outside)
+    for(int i = 0; i < 60 ; ++i){
+        if(i<10 || i > 49 || i%10==0 || i%10==9){
+            board[i] = &pieces[34];
+        }
+        else if(oldBoard->board[i]->dark)
+        {
+            board[i] = &pieces[32];
+        }
+        else if(oldBoard->board[i]->piece == EMPTY)
+        {
+            board[i] = &pieces[33];
+        }  
+    }
+
+    //moveListGenerator
+    moveListGenerator->handle(this);
+};
+
+

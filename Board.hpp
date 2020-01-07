@@ -29,6 +29,7 @@
 #define EMPTY 17
 #define DEAD 17
 
+
 class Board{
     public:
         static const int oriAlivePieces[7];
@@ -55,7 +56,6 @@ class Board{
         bool flip(char pos, char piece); // Version 0.4.3
         void removePiece(int index, bool ply); //removePieceFromPieceList Version 0.4.3
         int addPiece(Piece* piece, bool ply); //addPieceToPieceList Version 0.4.3
-        
         std::pair<char,char> genMove();
         void setMoveList(); //Version 0.5.1
         bool isLegalMove(int from, int to, bool ply); //Version 0.5.1
@@ -64,6 +64,8 @@ class Board{
         Board(){
 
         };
+
+        Board(Board*);
 };
 
 #endif //BOARD

@@ -16,6 +16,8 @@ class MidGame : public MoveListGenerator
         static std::vector<std::pair<char,char>> moveVector[14];
 
         void genMoveList(Board* board) const;
+
+        virtual ~MidGame();
         
 };
 

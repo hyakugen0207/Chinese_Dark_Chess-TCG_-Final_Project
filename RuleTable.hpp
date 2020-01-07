@@ -16,7 +16,6 @@ class RuleTable{
         static int JUMP_DIR[60][4]; 
         static int ORI_ALIVE_PIECES[7];
         static int DIR[4]; // {TOP, DOWN, LEFT, RIGHT}
-        
 
         static void initRuleTable();
         static void print();

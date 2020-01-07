@@ -127,3 +127,7 @@ void MoveListGenerator::genPossibleFlip(Board* board, std::vector<std::pair<char
         }
     }
 };
+
+MoveListGenerator::~MoveListGenerator(){
+
+};

@@ -46,3 +46,7 @@ void MidGame::genMoveList(Board* board) const{
     genPossibleFlip(board, &(board->moveList));
 };
 
+
+MidGame::~MidGame(){
+    
+};
