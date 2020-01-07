@@ -11,3 +11,7 @@ const int BothWithoutKing::PIECE_SCORE[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 int BothWithoutKing::getScore(Board* boad) const{
     return 0;
 };
+
+void BothWithoutKing::handle(Board* board)const{
+
+};

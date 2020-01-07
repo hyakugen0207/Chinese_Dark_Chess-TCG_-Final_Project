@@ -57,7 +57,6 @@ class Board{
         int addPiece(Piece* piece, bool ply); //addPieceToPieceList Version 0.4.3
         
         std::pair<char,char> genMove();
-        void setMoveListGenerator(); // set by current board
         void setMoveList(); //Version 0.5.1
         bool isLegalMove(int from, int to, bool ply); //Version 0.5.1
         void updateFlipPossibility();

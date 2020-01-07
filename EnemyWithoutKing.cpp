@@ -11,3 +11,7 @@ const int EnemyWithoutKing::PIECE_SCORE[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 int EnemyWithoutKing::getScore(Board* board) const{
     return 0;
 };
+
+void EnemyWithoutKing::handle(Board* board)const{
+
+};

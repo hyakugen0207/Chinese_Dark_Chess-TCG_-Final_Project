@@ -11,3 +11,7 @@ const int WithoutKing::PIECE_SCORE[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int WithoutKing::getScore(Board* board) const{
     return 0;
 };
+
+void WithoutKing::handle(Board* board)const{
+
+};

@@ -230,3 +230,7 @@ void EarlyGame::genMoveList(Board* board) const{
 int EarlyGame::getScore(Board* board) const{
     return 0;
 };
+
+void EarlyGame::handle(Board* board)const{
+
+};

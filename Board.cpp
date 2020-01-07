@@ -2,13 +2,14 @@
 #include <iostream>
 #include <random>
 
+
+// Strategy State
 #include "EarlyGame.hpp"
 #include "MidGame.hpp"
 #include "EnemyWithKing.hpp"
 #include "EnemyWithoutKing.hpp"
 #include "BothWithoutKing.hpp"
 #include "WithoutKing.hpp"
-#include "RandomMove.hpp"
 
 
 const int Board::oriAlivePieces[7] = {1,2,2,2,2,2,5};
@@ -191,7 +192,6 @@ bool Board::firstMove(char pos, char piece){
 
 std::pair<char,char> Board::genMove(){
 
-    setMoveListGenerator();
     setMoveList();
 
     if(moveList[0].first==0)
@@ -217,11 +217,8 @@ std::pair<char,char> Board::genMove(){
     return std::make_pair(-1,-1);
 };
 
-void Board::setMoveListGenerator(){
-
-};
-
 void Board::setMoveList(){
+    moveListGenerator->handle(this);
     moveListGenerator->genMoveList(this);
 };
 
