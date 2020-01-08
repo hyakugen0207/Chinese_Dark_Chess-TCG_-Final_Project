@@ -75,6 +75,10 @@ char convertToPiece(char command){
 }
 
 
+void setScoreStrategyByCurrentBoard(Board* board){
+    RuleTable::setScoreStrategyByBoard(board);
+}
+
 int main(){
     RuleTable::initRuleTable();
     RuleTable::print();
@@ -153,6 +157,7 @@ int main(){
                 case 'g':
                 {
                     std::cerr << "(client) get command : genmove" << std::endl;
+
                     std::pair<char,char> result;
                     if(buffer[1]=='r')
                     {
@@ -176,6 +181,10 @@ int main(){
                     buffer[2] = '-';
                     buffer[3] = (result.second/10)-1+'a';
                     buffer[4] = (result.second%10)+'0';
+
+                    setScoreStrategyByCurrentBoard(myBoard);
+                    std::cout << "Before move my board score is : " << myBoard->getScore() << std::endl;
+                    
                     break;
                 }
                 case 'k':

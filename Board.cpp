@@ -302,3 +302,28 @@ Board::Board(Board* oldBoard){
 };
 
 
+int Board::getScore(){
+
+    int score = 0;
+    if(ply) // 如果我是黑子
+    {
+        for(int i = 0 ; i < numPiecesInList[ply] ; ++i){
+            score += RuleTable::PIECE_SCORE[pieceList[ply][i]->piece-8];   
+        }
+        
+        for(int i = 0 ; i < numPiecesInList[!ply] ; ++i){
+            score -= RuleTable::PIECE_SCORE[pieceList[!ply][i]->piece+8];
+        }
+    }
+    else //如果我是紅子
+    {
+        for(int i = 0 ; i < numPiecesInList[ply] ; ++i){
+            score += RuleTable::PIECE_SCORE[pieceList[ply][i]->piece];   
+        }
+        
+        for(int i = 0 ; i < numPiecesInList[!ply] ; ++i){
+            score -= RuleTable::PIECE_SCORE[pieceList[!ply][i]->piece];
+        }
+    }
+    return score;
+};

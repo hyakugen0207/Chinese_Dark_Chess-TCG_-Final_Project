@@ -60,6 +60,7 @@ class Board{
         void setMoveList(); //Version 0.5.1
         bool isLegalMove(int from, int to, bool ply); //Version 0.5.1
         void updateFlipPossibility();
+        int getScore();
 
         Board(){
 

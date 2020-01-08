@@ -8,7 +8,6 @@
 class MidGame : public MoveListGenerator
 {
     public:
-        virtual int getScore(Board* board) const = 0;
         virtual void handle(Board* board)const = 0;
         static const char moveOrder[7];
         static const char eatOrder[7];

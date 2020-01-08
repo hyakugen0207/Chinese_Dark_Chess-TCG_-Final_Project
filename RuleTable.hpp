@@ -7,6 +7,8 @@
 #define RIGHT 1
 #include <iostream>
 
+class Board;
+
 class RuleTable{
     public:
         static bool LEGAL_EAT_ARRAY[18][18];
@@ -16,10 +18,14 @@ class RuleTable{
         static int JUMP_DIR[60][4]; 
         static int ORI_ALIVE_PIECES[7];
         static int DIR[4]; // {TOP, DOWN, LEFT, RIGHT}
+        static int PIECE_SCORE[18];
+        static const int PIECE_SCORE_GROUP[4][18];
 
         static void initRuleTable();
         static void print();
         static bool isInside(int pos);
+        static void setScoreStrategyByBoard(Board* );
+        
 
     private:
 
@@ -30,7 +36,7 @@ class RuleTable{
         static void initJumpNum();
         static void initJumpDir();
         static void initOriAlivePieces();
-        
+        static void setScoreStrategy(int);
 };
 
 #endif //RULETABLE

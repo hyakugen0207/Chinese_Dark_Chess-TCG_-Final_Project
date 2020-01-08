@@ -1,5 +1,5 @@
 #include "RuleTable.hpp"
-
+#include "Board.hpp"
 bool RuleTable::LEGAL_EAT_ARRAY[18][18];
 int RuleTable::MOVE_NUM[60]; //ok
 int RuleTable::MOVE_DIR[60][4]; //ok
@@ -7,6 +7,19 @@ int RuleTable::JUMP_NUM[60]; //ok
 int RuleTable::JUMP_DIR[60][4]; //ok
 int RuleTable::ORI_ALIVE_PIECES[7]; 
 int RuleTable::DIR[4]; // {TOP, DOWN, LEFT, RIGHT} //ok
+int RuleTable::PIECE_SCORE[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int const RuleTable::PIECE_SCORE_GROUP[4][18]={
+    {80,48,15,5,2,29,15,0,80,48,15,5,2,29,15,0,0,0}, 
+    {290,162,54,18,6,54,1,0,0,163,55,19,7,55,57,0,0,0},
+    {0,150,32,10,4,180,120,0,500,130,32,10,4,54,1,0,0,0},
+    {0,70,15,5,2,19,1,0,0,70,15,5,2,19,1,0,0,0}
+};
+/*
+0 : BothWithKing
+1 : EnemyWithoutKing
+2 : WithoutKing
+3 : BothWithoutKing
+*/
 
 void RuleTable::initRuleTable(){
     initDir();
@@ -159,3 +172,31 @@ void RuleTable::print(){
         std::cerr << std::endl;
     }
 };
+
+
+/*
+0 : BothWithKing
+1 : EnemyWithoutKing
+2 : WithoutKing
+3 : BothWithoutKing
+*/
+void RuleTable::setScoreStrategyByBoard(Board* board){
+    bool withKing = board->alivePieces[board->ply][0];
+    bool enemyWithKing = board->alivePieces[!board->ply][0];
+    if(enemyWithKing)
+    {
+        if(withKing) setScoreStrategy(0);   
+        else setScoreStrategy(2);   
+    }
+    else
+    {
+        if(withKing) setScoreStrategy(1);   
+        else setScoreStrategy(3);   
+    }
+};
+
+void RuleTable::setScoreStrategy(int strategy){
+    for(int i = 0 ; i < 18 ; ++i){
+        PIECE_SCORE[i] = PIECE_SCORE_GROUP[strategy][i];
+    }
+}
