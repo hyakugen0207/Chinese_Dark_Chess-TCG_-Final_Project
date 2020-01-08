@@ -4,6 +4,12 @@
 #include "Piece.hpp"
 #include "RuleTable.hpp"
 
+#include "EarlyGame.hpp"
+#include "MidGame.hpp"
+#include "BothWithKing.hpp"
+#include "EnemyWithoutKing.hpp"
+#include "BothWithoutKing.hpp"
+#include "WithoutKing.hpp"
 
 void MoveListGenerator::genPossibleMoveAndEat(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece){
     //假設piece為0~31之間的"真實子"

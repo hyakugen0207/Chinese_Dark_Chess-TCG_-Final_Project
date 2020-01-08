@@ -1,5 +1,6 @@
 #include "WithoutKing.hpp"
 #include "Board.hpp"
+#include "BothWithoutKing.hpp"
 
 const char WithoutKing::moveOrder[7] = {UP, UC, UG, UM, UR, UN, UK}; 
 const char WithoutKing::eatOrder[7] = {UP, UC, UG, UM, UR, UN, UK}; 
@@ -13,5 +14,15 @@ int WithoutKing::getScore(Board* board) const{
 };
 
 void WithoutKing::handle(Board* board)const{
-
+    bool enemyWithKing = board->alivePieces[!board->ply][0];
+    if(enemyWithKing)
+    {
+        // Do Nothing  
+    }
+    else
+    {
+        board->moveListGenerator = new BothWithoutKing();
+        std::cout << "change state from WithoutKing to BothWithoutKing" << std::endl;
+        delete this; 
+    }
 };

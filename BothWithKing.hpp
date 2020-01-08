@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-class EnemyWithKing : public MidGame
+class BothWithKing : public MidGame
 {
     public:
         static const char moveOrder[7];

@@ -8,6 +8,11 @@
         1. alivePieceNum = >=15 / >=15
         2. myPieceList <= 5
     */
+#include "MidGame.hpp"
+#include "BothWithKing.hpp"
+#include "EnemyWithoutKing.hpp"
+#include "BothWithoutKing.hpp"
+#include "WithoutKing.hpp"
 
 const int EarlyGame::flipPriority[32] = 
 {12,17,42,47,21,31,28,38,
@@ -232,5 +237,37 @@ int EarlyGame::getScore(Board* board) const{
 };
 
 void EarlyGame::handle(Board* board)const{
-
+    std::cout << board->numAlivePieces[board->ply] << "," << board->numPiecesInList[board->ply] << std::endl;
+    if(board->numAlivePieces[board->ply] < 15 || board->numPiecesInList[board->ply] > 5)
+    {
+        bool enemyWithKing = board->alivePieces[!board->ply][0];
+        bool withKing = board->alivePieces[board->ply][0];
+        if(enemyWithKing)
+        {
+            if(withKing)
+            {
+                board->moveListGenerator = new BothWithKing();
+                std::cout << "change state from EarlyGame to BothWithKing" << std::endl;
+            }
+            else
+            {
+                board->moveListGenerator = new WithoutKing();
+                std::cout << "change state from EarlyGame to WithoutKing" << std::endl;
+            }
+        }
+        else
+        {
+            if(withKing)
+            {
+                board->moveListGenerator = new EnemyWithoutKing();
+                std::cout << "change state from EarlyGame to EnemyWithoutKing" << std::endl;
+            }
+            else
+            {
+                board->moveListGenerator = new BothWithoutKing();
+                std::cout << "change state from EarlyGame to BothWithoutKing" << std::endl;
+            }
+        }
+        delete this;
+    }
 };

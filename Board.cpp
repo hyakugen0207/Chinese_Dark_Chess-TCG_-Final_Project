@@ -6,7 +6,7 @@
 // Strategy State
 #include "EarlyGame.hpp"
 #include "MidGame.hpp"
-#include "EnemyWithKing.hpp"
+#include "BothWithKing.hpp"
 #include "EnemyWithoutKing.hpp"
 #include "BothWithoutKing.hpp"
 #include "WithoutKing.hpp"
@@ -173,10 +173,10 @@ void Board::initBoard(){
             flipPossibility[i][j] = darkPieceNum[i][j]*possibilityHelper[darkPieceNumAll];
         }
     }
-
+    ply = 0;
     //moveListGenerator
     delete moveListGenerator;
-    moveListGenerator = new EnemyWithKing();
+    moveListGenerator = new EarlyGame();
 };
 
 /*
@@ -231,7 +231,7 @@ void Board::updateFlipPossibility(){
 };
 
 Board::Board(Board* oldBoard){
-
+    ply = oldBoard->ply;
     //pieceList[2][16]
     for(int i = 0 ; i < 2 ; ++i){
         for(int j = 0 ; j < 16 ; ++j){
