@@ -1,12 +1,11 @@
 #include "myDefine.hpp"
-#include "Board.hpp"
 #include <climits>
 #include <cstdlib>
 #include <iostream>
 
 
 
-
+class Board;
 
 class HashNode{
     public :
@@ -28,10 +27,10 @@ class ZobristHashTable{
 
         HashNode hashNodes[HASH_NODE_NUM];
         
-        ULL updateHashValue(Board* board); //init
-        ULL updateHashValue(ULL oldValue, char pieceFrom, char pieceFromPos, char pieceToPos, char pieceDead); // jump or eat
-        ULL updateHashValue(ULL oldValue, char pieceFrom, char pieceFromPos, char pieceToPos); // move
-        ULL updateHashValue(ULL oldValue, char pieceFlip, char pieceFromPos); // flip
+        static ULL updateHashValue(Board* board); //init
+        static ULL updateHashValue(ULL oldValue, char pieceFrom, char pieceFromPos, char pieceToPos, char pieceDead); // jump or eat
+        static ULL updateHashValue(ULL oldValue, char pieceFrom, char pieceFromPos, char pieceToPos); // move
+        static ULL updateHashValue(ULL oldValue, char pieceFlip, char pieceFromPos); // flip
     private:
 
         

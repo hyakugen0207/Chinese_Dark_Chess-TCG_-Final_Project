@@ -12,7 +12,7 @@ void RandomMove::genMoveList(Board* board) const{
         board->moveList.insert(board->moveList.end(), moveVector.begin(), moveVector.end());
     }
 
-    genPossibleFlip(board, &(board->moveList));
+    genPossibleFlipPosition(board, &(board->moveList));
 
     int randIndex = rand()%board->moveList.size();
     

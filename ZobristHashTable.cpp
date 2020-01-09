@@ -1,4 +1,5 @@
 #include "ZobristHashTable.hpp"
+#include "Board.hpp"
 
 void ZobristHashTable::initStaticValue(){
     for(int i = 0 ; i < 18 ; ++i){
@@ -15,8 +16,8 @@ ULL ZobristHashTable::updateHashValue(Board* board){
     //ply
     value ^= randomPlyValue[int(board->ply)];
     //board
-    for(int i = 0 ; i < 32 ; ++i){
-        if(board->board[i]->piece != 18){
+    for(int i = 11 ; i < 49 ; ++i){
+        if(board->board[i]->piece != EMPTY){
             value ^= randomValue[int(board->board[i]->piece)][int(board->board[i]->position)];
         }
     }
@@ -39,6 +40,6 @@ ULL ZobristHashTable::updateHashValue(ULL oldValue, char pieceFrom, char pieceFr
 
 ULL ZobristHashTable::updateHashValue(ULL oldValue, char pieceFlip, char pieceFromPos){
     return oldValue^randomPlyValue[0]^randomPlyValue[1]
-        ^randomValue[16][int(pieceFromPos)]
+        ^randomValue[DARK][int(pieceFromPos)]
         ^randomValue[int(pieceFlip)][int(pieceFromPos)];
 }; // flip

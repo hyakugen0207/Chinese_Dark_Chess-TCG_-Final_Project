@@ -26,6 +26,7 @@
 #define UN 4
 #define UC 5
 #define UP 6
+#define DARK 16
 #define EMPTY 17
 #define DEAD 17
 

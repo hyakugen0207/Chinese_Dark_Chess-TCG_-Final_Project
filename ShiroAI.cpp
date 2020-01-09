@@ -184,6 +184,18 @@ int main(){
 
                     setScoreStrategyByCurrentBoard(myBoard);
                     std::cout << "Before move my board score is : " << myBoard->getScore() << std::endl;
+                    std::vector<std::pair<char,char>> a;
+                    myBoard->moveListGenerator->genPossibleFlipPosition(myBoard,&a);
+                    if(a.size()==0)
+                    {
+                        std::cout << "BestFlipPosition X " << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "BestFlipPosition is : " << int(a[0].first) << std::endl;
+                    }
+                    
+                    
                     
                     break;
                 }

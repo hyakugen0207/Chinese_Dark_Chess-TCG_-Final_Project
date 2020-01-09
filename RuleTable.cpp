@@ -14,6 +14,7 @@ int const RuleTable::PIECE_SCORE_GROUP[4][18]={
     {0,150,32,10,4,180,120,0,500,130,32,10,4,54,1,0,0,0},
     {0,70,15,5,2,19,1,0,0,70,15,5,2,19,1,0,0,0}
 };
+char RuleTable::currentState;
 /*
 0 : BothWithKing
 1 : EnemyWithoutKing
@@ -196,7 +197,13 @@ void RuleTable::setScoreStrategyByBoard(Board* board){
 };
 
 void RuleTable::setScoreStrategy(int strategy){
+    if(currentState==strategy) return;
+    currentState = strategy;
     for(int i = 0 ; i < 18 ; ++i){
         PIECE_SCORE[i] = PIECE_SCORE_GROUP[strategy][i];
     }
-}
+};
+
+int RuleTable::getPieceScore(char piece){
+    return PIECE_SCORE[piece];
+};

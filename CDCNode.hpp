@@ -3,10 +3,17 @@
 
 class CDCNode{
     public:
-        Board board;
+        Board* board;
         ULL hashValue;
-        char move[6];
+        char hashState;
+        bool isFlipNode;
+        std::pair<char,char> move;
         CDCNode* parent;
-        CDCNode* children[100]; //86? move 16*4 + jump 4 + flip 16
+        CDCNode* children[70]; //86? move 16*4 + jump 4 + flip 1
+
+
+        CDCNode(Board*); // init
+        CDCNode(Board*, CDCNode*, std::pair<char,char> move, bool f);
+        ~CDCNode();
 };
 

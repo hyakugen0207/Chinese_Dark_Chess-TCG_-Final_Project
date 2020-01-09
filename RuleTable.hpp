@@ -19,12 +19,14 @@ class RuleTable{
         static int ORI_ALIVE_PIECES[7];
         static int DIR[4]; // {TOP, DOWN, LEFT, RIGHT}
         static int PIECE_SCORE[18];
+        static char currentState;
         static const int PIECE_SCORE_GROUP[4][18];
 
         static void initRuleTable();
         static void print();
         static bool isInside(int pos);
         static void setScoreStrategyByBoard(Board* );
+        static int getPieceScore(char piece);
         
 
     private:

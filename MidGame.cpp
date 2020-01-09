@@ -43,7 +43,7 @@ void MidGame::genMoveList(Board* board) const{
     }
     
     //append flip
-    genPossibleFlip(board, &(board->moveList));
+    genPossibleFlipPosition(board, &(board->moveList));
 };
 
 
