@@ -41,6 +41,7 @@ class Board{
         MoveListGenerator* moveListGenerator;
         std::vector<std::pair<char, char>> moveList;
         Piece* board[60];
+        bool rootPly;
         bool ply;
         Piece pieces[35];
         Piece* pieceList[2][16];

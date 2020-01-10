@@ -4,6 +4,10 @@ DCTP: main.cpp MyAI.cpp
 shiro: ShiroAI.cpp Board.cpp EarlyGame.cpp BothWithKing.cpp EnemyWithoutKing.cpp RuleTable.cpp RandomMove.cpp MoveListGenerator.cpp MidGame.cpp BothWithoutKing.cpp WithoutKing.cpp
 	g++ -std=c++11 -O2 ShiroAI.cpp Board.cpp EarlyGame.cpp BothWithKing.cpp EnemyWithoutKing.cpp RuleTable.cpp RandomMove.cpp MoveListGenerator.cpp MidGame.cpp BothWithoutKing.cpp WithoutKing.cpp -o SHIRO
 	rm -f *.o
+
+test: 
+	g++ -std=c++11 -O2 test.cpp -o TEST
+	rm -f *.o
 clean:
 
 	rm -rf DCTP

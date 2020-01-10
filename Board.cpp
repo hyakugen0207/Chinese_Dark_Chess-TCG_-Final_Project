@@ -232,6 +232,7 @@ void Board::updateFlipPossibility(){
 
 Board::Board(Board* oldBoard){
     ply = oldBoard->ply;
+    rootPly = oldBoard->rootPly;
     //pieceList[2][16]
     for(int i = 0 ; i < 2 ; ++i){
         for(int j = 0 ; j < 16 ; ++j){
@@ -305,24 +306,24 @@ Board::Board(Board* oldBoard){
 int Board::getScore(){
 
     int score = 0;
-    if(ply) // 如果我是黑子
+    if(rootPly) // 如果我是黑子
     {
-        for(int i = 0 ; i < numPiecesInList[ply] ; ++i){
-            score += RuleTable::PIECE_SCORE[pieceList[ply][i]->piece-8];   
+        for(int i = 0 ; i < numPiecesInList[rootPly] ; ++i){
+            score += RuleTable::PIECE_SCORE[pieceList[rootPly][i]->piece-8];   
         }
         
-        for(int i = 0 ; i < numPiecesInList[!ply] ; ++i){
-            score -= RuleTable::PIECE_SCORE[pieceList[!ply][i]->piece+8];
+        for(int i = 0 ; i < numPiecesInList[!rootPly] ; ++i){
+            score -= RuleTable::PIECE_SCORE[pieceList[!rootPly][i]->piece+8];
         }
     }
     else //如果我是紅子
     {
-        for(int i = 0 ; i < numPiecesInList[ply] ; ++i){
-            score += RuleTable::PIECE_SCORE[pieceList[ply][i]->piece];   
+        for(int i = 0 ; i < numPiecesInList[rootPly] ; ++i){
+            score += RuleTable::PIECE_SCORE[pieceList[rootPly][i]->piece];   
         }
         
-        for(int i = 0 ; i < numPiecesInList[!ply] ; ++i){
-            score -= RuleTable::PIECE_SCORE[pieceList[!ply][i]->piece];
+        for(int i = 0 ; i < numPiecesInList[!rootPly] ; ++i){
+            score -= RuleTable::PIECE_SCORE[pieceList[!rootPly][i]->piece];
         }
     }
     return score;

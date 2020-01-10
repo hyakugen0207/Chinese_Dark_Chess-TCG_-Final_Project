@@ -10,10 +10,14 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/un.h>
-#include <signal.h> 
+#include <signal.h>
+
 
 #define SERVER_PATH     "/tmp/server"
 #define BUFFER_LENGTH    9
+
+
+
 
 int recvCommand(char* buffer, int sd){
     int bytesReceived = 0;
@@ -162,12 +166,14 @@ int main(){
                     if(buffer[1]=='r')
                     {
                         myBoard->ply = 0;
+                        myBoard->rootPly = 0;
                         // alpha-beta scout
                         result = myBoard->genMove(); // for debug
                     }
                     else if(buffer[1]=='b')
                     {
                         myBoard->ply = 1;
+                        myBoard->rootPly = 1;
                         // alpha-beta scout
                         result = myBoard->genMove(); // for debug
                     }
