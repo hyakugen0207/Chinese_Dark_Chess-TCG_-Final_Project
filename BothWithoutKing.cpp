@@ -23,3 +23,7 @@ std::vector<std::pair<char,char>> BothWithoutKing::moveVector[14];
 void BothWithoutKing::handle(Board* board)const{
 
 };
+
+MoveListGenerator* BothWithoutKing::duplicate()const{
+    return new BothWithoutKing();
+};

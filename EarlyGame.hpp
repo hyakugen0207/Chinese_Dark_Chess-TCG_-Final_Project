@@ -10,6 +10,7 @@ class EarlyGame : public MoveListGenerator
         void handle(Board* board)const;
         void genMoveList(Board* board) const;
         int getScore(Board* board) const;
+        MoveListGenerator* duplicate()const;
 };
 
 #endif //EARLYGAME

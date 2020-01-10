@@ -45,3 +45,7 @@ void BothWithKing::handle(Board* board)const{
     }
     
 };
+
+MoveListGenerator* BothWithKing::duplicate()const{
+    return new BothWithKing();
+};

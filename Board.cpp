@@ -35,7 +35,7 @@ bool Board::move(char from, char to){
 
     if(board[to]->piece != 17) // eat
     { 
-        board[to]->position = 0;
+        board[to]->position = -1;
         alivePieces[board[to]->piece>>3][board[to]->piece&7]--;
         numAlivePieces[(board[to]->piece>>3)]--;
         removePiece(board[to]->indexInPieceList, board[to]->piece>>3);
@@ -46,7 +46,7 @@ bool Board::move(char from, char to){
     Piece* tmp = board[to];
     board[to] = board[from]; 
     board[from] = tmp;
-    board[from]->position = from;
+    //board[from]->position = from;
     board[to]->position = to;
     ply = !ply;
     return true;
@@ -130,7 +130,7 @@ void Board::initBoard(){
 
     //init board
     for(int i = 0; i < 60 ; ++i){
-        if(i<10 || i > 49 || i%10==0 || i%10==9){
+        if(i<11 || i > 48 || i%10==0 || i%10==9){
             board[i] = &pieces[34];
         }
         else
@@ -174,6 +174,7 @@ void Board::initBoard(){
         }
     }
     ply = 0;
+    rootPly = 0;
     //moveListGenerator
     delete moveListGenerator;
     moveListGenerator = new EarlyGame();
@@ -231,75 +232,78 @@ void Board::updateFlipPossibility(){
 };
 
 Board::Board(Board* oldBoard){
-    ply = oldBoard->ply;
-    rootPly = oldBoard->rootPly;
+    //std::cerr << "new Board" << std::endl;
+    this->ply = oldBoard->ply;
+    this->rootPly = oldBoard->rootPly;
     //pieceList[2][16]
     for(int i = 0 ; i < 2 ; ++i){
         for(int j = 0 ; j < 16 ; ++j){
-            pieceList[i][j] = nullptr;
+            this->pieceList[i][j] = nullptr;
         }
     }
-
     //copy piece and put it to board and pieceList
     for(int i = 0 ; i < 35 ; ++i){
-        pieces[i].position = oldBoard->pieces[i].position;
-        pieces[i].inside = oldBoard->pieces[i].inside;
-        pieces[i].dark = oldBoard->pieces[i].dark;
-        pieces[i].indexInPieceList = oldBoard->pieces[i].indexInPieceList;
-        pieces[i].piece = oldBoard->pieces[i].piece;
-        board[pieces[i].position] = &pieces[i];
-        pieceList[pieces[i].piece>>3][pieces[i].indexInPieceList] = &pieces[i];
+        this->pieces[i].position = oldBoard->pieces[i].position;
+        this->pieces[i].inside = oldBoard->pieces[i].inside;
+        this->pieces[i].dark = oldBoard->pieces[i].dark;
+        this->pieces[i].indexInPieceList = oldBoard->pieces[i].indexInPieceList;
+        this->pieces[i].piece = oldBoard->pieces[i].piece;
+        if(this->pieces[i].position!=-1)
+        {
+            this->board[pieces[i].position] = &(this->pieces[i]);
+        }
+        if(this->pieces[i].indexInPieceList!= -1)
+        {
+            this->pieceList[pieces[i].piece>>3][pieces[i].indexInPieceList] = &(this->pieces[i]);
+        }
     }
-
     //copy numPiecesInList
-    numPiecesInList[0] = oldBoard->numPiecesInList[0];
-    numPiecesInList[1] = oldBoard->numPiecesInList[1];
+    this->numPiecesInList[0] = oldBoard->numPiecesInList[0];
+    this->numPiecesInList[1] = oldBoard->numPiecesInList[1];
 
     //copy alivePieces
     for(int i = 0; i < 2 ; ++i){
         for(int j = 0 ; j < 7 ; ++j){
-            alivePieces[i][j] = oldBoard->alivePieces[i][j];
+            this->alivePieces[i][j] = oldBoard->alivePieces[i][j];
         }
     }
-
     //copy numAlivePieces
-    numAlivePieces[0] = oldBoard->numAlivePieces[0];
-    numAlivePieces[1] = oldBoard->numAlivePieces[1];
+    this->numAlivePieces[0] = oldBoard->numAlivePieces[0];
+    this->numAlivePieces[1] = oldBoard->numAlivePieces[1];
 
     //copy convertPieceToPiecesIndex
     for(int i = 0 ; i < 18 ; ++i){
-        convertPieceToPiecesIndex[i] = oldBoard->convertPieceToPiecesIndex[i];
+        this->convertPieceToPiecesIndex[i] = oldBoard->convertPieceToPiecesIndex[i];
     }
 
     //copy darkPieceNumAll
-    darkPieceNumAll = oldBoard->darkPieceNumAll;
-
+    this->darkPieceNumAll = oldBoard->darkPieceNumAll;
     //darkPieceNum  flipPossibility
     for(int i = 0 ; i < 2 ; ++i){
         for(int j = 0 ; j < 7 ; ++j){
-            darkPieceNum[i][j] = oldBoard->darkPieceNum[i][j];
-            flipPossibility[i][j] = oldBoard->flipPossibility[i][j];
+            this->darkPieceNum[i][j] = oldBoard->darkPieceNum[i][j];
+            this->flipPossibility[i][j] = oldBoard->flipPossibility[i][j];
         }
     }
 
 
     //copy board (empty / dark / outside)
     for(int i = 0; i < 60 ; ++i){
-        if(i<10 || i > 49 || i%10==0 || i%10==9){
-            board[i] = &pieces[34];
+        if(i<11 || i > 48 || i%10==0 || i%10==9){
+            this->board[i] = &pieces[34];
         }
         else if(oldBoard->board[i]->dark)
         {
-            board[i] = &pieces[32];
+            this->board[i] = &pieces[32];
         }
         else if(oldBoard->board[i]->piece == EMPTY)
         {
-            board[i] = &pieces[33];
+            this->board[i] = &pieces[33];
         }  
     }
-
     //moveListGenerator
-    moveListGenerator->handle(this);
+    this->moveListGenerator = oldBoard->moveListGenerator->duplicate();
+    this->moveListGenerator->handle(this);
 };
 
 

@@ -35,3 +35,7 @@ void WithoutKing::handle(Board* board)const{
         delete this; 
     }
 };
+
+MoveListGenerator* WithoutKing::duplicate()const{
+    return new WithoutKing();
+};

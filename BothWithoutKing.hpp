@@ -11,6 +11,7 @@ class BothWithoutKing : public MidGame
         static const char mixOrder[14];
         static std::vector<std::pair<char,char>> moveVector[14]; 
         void handle(Board* board)const;
+        MoveListGenerator* duplicate()const;
 };
 
 

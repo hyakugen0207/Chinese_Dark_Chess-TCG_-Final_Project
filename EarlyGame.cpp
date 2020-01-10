@@ -248,12 +248,12 @@ void EarlyGame::handle(Board* board)const{
             if(withKing)
             {
                 board->moveListGenerator = new BothWithKing();
-                //std::cout << "change state from EarlyGame to BothWithKing" << std::endl;
+                std::cout << "change state from EarlyGame to BothWithKing" << std::endl;
             }
             else
             {
                 board->moveListGenerator = new WithoutKing();
-                //std::cout << "change state from EarlyGame to WithoutKing" << std::endl;
+                std::cout << "change state from EarlyGame to WithoutKing" << std::endl;
             }
         }
         else
@@ -261,14 +261,18 @@ void EarlyGame::handle(Board* board)const{
             if(withKing)
             {
                 board->moveListGenerator = new EnemyWithoutKing();
-                //std::cout << "change state from EarlyGame to EnemyWithoutKing" << std::endl;
+                std::cout << "change state from EarlyGame to EnemyWithoutKing" << std::endl;
             }
             else
             {
                 board->moveListGenerator = new BothWithoutKing();
-                //std::cout << "change state from EarlyGame to BothWithoutKing" << std::endl;
+                std::cout << "change state from EarlyGame to BothWithoutKing" << std::endl;
             }
         }
         delete this;
     }
+};
+
+MoveListGenerator* EarlyGame::duplicate()const{
+    return new EarlyGame();
 };

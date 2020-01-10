@@ -1,6 +1,10 @@
 #include "ZobristHashTable.hpp"
 #include "Board.hpp"
 
+ULL ZobristHashTable::randomPlyValue[2];
+ULL ZobristHashTable::randomValue[18][32];
+HashNode ZobristHashTable::hashNodes[HASH_NODE_NUM];
+
 void ZobristHashTable::initStaticValue(){
     for(int i = 0 ; i < 18 ; ++i){
         for(int j = 0 ; j < 32 ; ++j){

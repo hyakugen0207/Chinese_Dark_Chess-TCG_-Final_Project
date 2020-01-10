@@ -1,3 +1,4 @@
+#pragma once
 #include "myDefine.hpp"
 #include <climits>
 #include <cstdlib>
@@ -25,7 +26,7 @@ class ZobristHashTable{
         static ULL initValue;
         static void initStaticValue();
 
-        HashNode hashNodes[HASH_NODE_NUM];
+        static HashNode hashNodes[HASH_NODE_NUM];
         
         static ULL updateHashValue(Board* board); //init
         static ULL updateHashValue(ULL oldValue, char pieceFrom, char pieceFromPos, char pieceToPos, char pieceDead); // jump or eat

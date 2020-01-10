@@ -2,7 +2,7 @@
 #include "Board.hpp"
 #include "CDCNode.hpp"
 #include <climits>
-
+#include <unistd.h>
 
 auto timer = [] ( bool reset = false ) -> double {
     static decltype(std::chrono::steady_clock::now()) tick, tock;
@@ -16,13 +16,12 @@ auto timer = [] ( bool reset = false ) -> double {
 
 bool NegaScoutController::timeoff = false;
 
-std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, double timeLimit)
-{
+std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, double timeLimit){
     timer(true); // reset timer
     int depth = 1;
     timeoff = false;
     std::pair<char,char> move;
-
+    std::cerr << "in ID" << std::endl;
     while(true){
         if(timer() > timeLimit) break;
 
@@ -31,23 +30,24 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
         if(root->board->moveList.size()==0) return std::make_pair(0,0); //no move
         if(root->board->moveList[0].first==0) return root->board->moveList[1]; //early game
         int tmpScore = -10000;
+        std::cerr << "deep : " << depth << std::endl;
         std::pair<char,char> tmpMove;
         for(int i = 0 ; i < root->board->moveList.size() ; ++i){
-            auto nextMove = root->board->moveList[i];
             int searchScore;
             if(root->children[i]==nullptr)
             {
-                root->children[i] = new CDCNode(root, root->board->moveList[i], false);
+                auto nextMove = root->board->moveList[i];
+                root->children[i] = new CDCNode(root, nextMove, false);
                 // grow child , if this move is flip , CDCNode will become chance node
             }
             
             if(root->children[i]->nodeType==2) // chance node do minmax
             {
-
+                searchScore = 20;
             }
             else // do negaScout
             {  
-                searchScore = negaScout(root->children[i], depth, INT_MIN, INT_MAX, &timeLimit);
+                searchScore = negaScout(root->children[i], depth, -10000, 10000, &timeLimit);
             }
 
             if(!timeoff && tmpScore < searchScore)
@@ -58,16 +58,16 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
 
             if(timeoff) break;
         }
+        std::cerr << "tmpScore in deep : " << depth << " is -> "<< tmpScore << std::endl;
 
         
         if(!timeoff) move = tmpMove;
         else break;
-
+        sleep(2);
         ++depth;
     }
-
     return move;
-}
+};
 
 int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta, double* timeLimit){
     
@@ -80,7 +80,7 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
         return node->getScore();
     }
 
-    int currentLowerBound = INT_MIN; // fail soft
+    int currentLowerBound = -10000; // fail soft
     int currentUpperBound = beta;
     int tmpScore;
     for(int i = 0 ; (i < node->board->moveList.size()) && !timeoff ; ++i){
@@ -111,5 +111,5 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
 
         currentUpperBound = std::max(alpha, currentLowerBound)+1; // set up a null window
     }
-    return currentUpperBound;
+    return currentLowerBound;
 };

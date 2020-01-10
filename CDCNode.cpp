@@ -1,5 +1,6 @@
 #include "CDCNode.hpp"
 #include "ZobristHashTable.hpp"
+#include "Board.hpp"
 
 int CDCNode::getScore(){
     return (this->depth%2==0) ? this->board->getScore() : this->board->getScore()*-1;
@@ -39,6 +40,7 @@ bool CDCNode::growChild(){
 
 
 CDCNode::CDCNode(CDCNode* p, std::pair<char,char> m, bool isFlip){
+    //std::cerr << "new child CDCNode" << std::endl;
     this->lowerBound = -10000;
     this->upperBound = 10000;
     this->move = m; 
@@ -65,33 +67,41 @@ CDCNode::CDCNode(CDCNode* p, std::pair<char,char> m, bool isFlip){
     }
     
     this->board = new Board(p->board);
+    //std::cerr << "new child CDCNode2" << std::endl;
     this->isFlipNode = isFlip;
     hashState = RuleTable::currentState;
     if(this->isFlipNode)
     {
+        //std::cerr << "new child CDCNode isFlip" << int(m.first) << "," << int(m.second) << std::endl;
         this->depth = p->depth+1;
         hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first);
         this->board->flip(m.first,m.second);
+        //std::cerr << "new child CDCNode isFlip done" << std::endl;
     }
     else
     {
         if(m.first==m.second)
         {
             // is chance node
+            //std::cerr << "new child CDCNode is chance" << int(m.first) << "," << int(m.second) << std::endl;
             this->nodeType = 2;
             this->depth = p->depth;
             growFlipNode(m.first);
+            //std::cerr << "new child CDCNode is chance done" << std::endl;
         }
         else
         {
+            //std::cerr << "new child CDCNode is move" << int(m.first) << "," << int(m.second) << std::endl;
             this->depth = p->depth+1;
             hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first,m.second);
             this->board->move(m.first,m.second); 
+            //std::cerr << "new child CDCNode is move done" << std::endl;
         }
     }
 };
 
 CDCNode::CDCNode(Board* b, char type){
+    //std::cerr << "new CDCNode" << std::endl;
     this->nodeType = type;
     this->depth = 0;
     this->move = std::make_pair(0,0); 
@@ -102,10 +112,11 @@ CDCNode::CDCNode(Board* b, char type){
     hashValue = ZobristHashTable::updateHashValue(this->board);
     this->lowerBound = -10000;
     this->upperBound = 10000;
+    //std::cerr << "end new CDCNode" << std::endl;
 };
 
 CDCNode::~CDCNode(){
-
+    //std::cerr << "clean~~" << std::endl;
     for(int i = 0 ; i < 70 ; ++i){
         if(children[i]!=nullptr)
         {
@@ -120,7 +131,7 @@ CDCNode::~CDCNode(){
 };
 
 void CDCNode::growFlipNode(char pos){
-
+    std::cerr << "new chance" << std::endl;
     int index = 0;
 
     for(int i = 0 ; i < 2 ; ++i){
@@ -138,6 +149,7 @@ void CDCNode::growFlipNode(char pos){
             }
         } 
     }
+    std::cerr << "end new chance" << std::endl;
 };
 
 double CDCNode::getChanceScore(){
@@ -194,6 +206,3 @@ int CDCNode::getMinMaxScore(){
     }
 };
 
-int CDCNode::getNegaScoutScore(){
-
-};

@@ -1,5 +1,6 @@
+#pragma once
 #include "myDefine.hpp"
-#include "Board.hpp"
+class Board;
 
 class CDCNode{
     public:
@@ -19,7 +20,7 @@ class CDCNode{
         bool growChild();
         double getChanceScore(); // for chanceNode
         int getMinMaxScore();  // for chanceNode
-        int getNegaScoutScore();
+        //int getNegaScoutScore();
 
         CDCNode(Board*, char type); // init
         CDCNode(CDCNode*, std::pair<char,char> move, bool f);

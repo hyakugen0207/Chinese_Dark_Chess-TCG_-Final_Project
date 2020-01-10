@@ -1,6 +1,6 @@
 #include "myDefine.hpp"
 #include "Board.hpp"
-//#include "ZobristHashTable.hpp"
+#include "ZobristHashTable.hpp"
 
 #include <stdio.h>
 #include <iostream>
@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <sys/un.h>
 #include <signal.h>
+#include "NegaScoutController.hpp"
+#include "CDCNode.hpp"
 
 
 #define SERVER_PATH     "/tmp/server"
@@ -86,9 +88,11 @@ void setScoreStrategyByCurrentBoard(Board* board){
 int main(){
     RuleTable::initRuleTable();
     RuleTable::print();
-    //ZobristHashTable* hashTable = new ZobristHashTable();
+    ZobristHashTable::initStaticValue();
+
     bool isEnd = false;
     Board* myBoard = new Board();
+    CDCNode* root = nullptr;
 
     while(!isEnd){
         // socket
@@ -109,6 +113,12 @@ int main(){
 
         while(rc<0)
         {
+            if(root!=nullptr)
+            {
+                std::cout << "clean" << std::endl;
+                delete root;
+                root = nullptr;
+            }
             //pondering
             if(getppid()==1){
                 exit(0);
@@ -161,33 +171,7 @@ int main(){
                 case 'g':
                 {
                     std::cerr << "(client) get command : genmove" << std::endl;
-
-                    std::pair<char,char> result;
-                    if(buffer[1]=='r')
-                    {
-                        myBoard->ply = 0;
-                        myBoard->rootPly = 0;
-                        // alpha-beta scout
-                        result = myBoard->genMove(); // for debug
-                    }
-                    else if(buffer[1]=='b')
-                    {
-                        myBoard->ply = 1;
-                        myBoard->rootPly = 1;
-                        // alpha-beta scout
-                        result = myBoard->genMove(); // for debug
-                    }
-                    else //first move
-                    {
-                        result = myBoard->genMove();
-                    }
-                    
-                    buffer[0] = (result.first/10)-1+'a';
-                    buffer[1] = (result.first%10)+'0';
-                    buffer[2] = '-';
-                    buffer[3] = (result.second/10)-1+'a';
-                    buffer[4] = (result.second%10)+'0';
-
+                    myBoard->moveListGenerator->handle(myBoard);
                     setScoreStrategyByCurrentBoard(myBoard);
                     std::cout << "Before move my board score is : " << myBoard->getScore() << std::endl;
                     std::vector<std::pair<char,char>> a;
@@ -200,9 +184,30 @@ int main(){
                     {
                         std::cout << "BestFlipPosition is : " << int(a[0].first) << std::endl;
                     }
-                    
-                    
-                    
+
+                    std::pair<char,char> result;
+                    if(buffer[1]=='r')
+                    {
+                        myBoard->ply = 0;
+                        myBoard->rootPly = 0;
+                    }
+                    else if(buffer[1]=='b')
+                    {
+                        myBoard->ply = 1;
+                        myBoard->rootPly = 1;
+                    }
+
+                    //negaScout
+                    root = new CDCNode(myBoard, 1); 
+                    result = NegaScoutController::iterativeDeepening(root,10);
+                    std::cerr << "get result" << result.first << "," << result.second << std::endl;
+
+                    std::cerr << "out" << std::endl;
+                    buffer[0] = (result.first/10)-1+'a';
+                    buffer[1] = (result.first%10)+'0';
+                    buffer[2] = '-';
+                    buffer[3] = (result.second/10)-1+'a';
+                    buffer[4] = (result.second%10)+'0';
                     break;
                 }
                 case 'k':

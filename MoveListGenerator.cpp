@@ -76,7 +76,7 @@ void MoveListGenerator::genPossibleMove(Board* board, std::vector<std::pair<char
         Piece* targetPiece = board->board[pos + RuleTable::MOVE_DIR[pos][i]];
         if(targetPiece->piece == EMPTY)
         {
-            moveVector->emplace_back(std::make_pair(pos, targetPiece->position));
+            moveVector->emplace_back(std::make_pair(pos, pos + RuleTable::MOVE_DIR[pos][i]));
         }
     }
 };
@@ -120,7 +120,7 @@ void MoveListGenerator::genPossibleEat(Board* board, std::vector<std::pair<char,
             Piece* targetPiece = board->board[pos + RuleTable::MOVE_DIR[pos][i]];
             if(RuleTable::LEGAL_EAT_ARRAY[p][targetPiece->piece])
             {
-                moveVector->emplace_back(std::make_pair(pos, targetPiece->position)); // push eat first
+                moveVector->emplace_back(std::make_pair(pos, pos + RuleTable::MOVE_DIR[pos][i])); // push eat first
             }
         }
     }

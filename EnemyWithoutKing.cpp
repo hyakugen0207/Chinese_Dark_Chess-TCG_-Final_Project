@@ -35,3 +35,7 @@ void EnemyWithoutKing::handle(Board* board)const{
         delete this;
     }
 };
+
+MoveListGenerator* EnemyWithoutKing::duplicate()const{
+    return new EnemyWithoutKing();
+};
