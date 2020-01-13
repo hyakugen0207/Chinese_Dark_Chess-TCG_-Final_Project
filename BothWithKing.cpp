@@ -23,6 +23,7 @@ std::vector<std::pair<char,char>> BothWithKing::moveVector[14];
 */
 
 void BothWithKing::handle(Board* board)const{
+    
     bool enemyWithKing = board->alivePieces[!board->ply][0];
     bool withKing = board->alivePieces[board->ply][0];
     if(enemyWithKing && withKing)

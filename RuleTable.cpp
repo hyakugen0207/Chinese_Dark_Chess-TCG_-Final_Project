@@ -7,14 +7,9 @@ int RuleTable::JUMP_NUM[60]; //ok
 int RuleTable::JUMP_DIR[60][4]; //ok
 int RuleTable::ORI_ALIVE_PIECES[7]; 
 int RuleTable::DIR[4]; // {TOP, DOWN, LEFT, RIGHT} //ok
-int RuleTable::PIECE_SCORE[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int const RuleTable::PIECE_SCORE_GROUP[4][18]={
-    {80,48,15,5,2,29,15,0,80,48,15,5,2,29,15,0,0,0}, 
-    {290,162,54,18,6,54,1,0,0,163,55,19,7,55,57,0,0,0},
-    {0,150,32,10,4,180,120,0,500,130,32,10,4,54,1,0,0,0},
-    {0,70,15,5,2,19,1,0,0,70,15,5,2,19,1,0,0,0}
-};
-char RuleTable::currentState;
+int RuleTable::PIECE_SCORE[18] = {80,48,15,5,2,29,15,0,80,48,15,5,2,29,15,0,0,0};
+int RuleTable::PIECE_SCORE_BASIC[18] = {80,48,15,5,2,29,15,0,80,48,15,5,2,29,15,0,0,0};
+int RuleTable::CAN_EAT_NUM[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 /*
 0 : BothWithKing
 1 : EnemyWithoutKing
@@ -33,7 +28,7 @@ void RuleTable::initRuleTable(){
 };
 
 bool RuleTable::isInside(int pos){
-    return !(pos<10 || pos>49 || pos%10==0 || pos%10==9);
+    return !(pos<11 || pos>48 || pos%10==0 || pos%10==9);
 };
 
 void RuleTable::initDir(){
@@ -140,11 +135,11 @@ void RuleTable::initOriAlivePieces(){
 };
 
 void RuleTable::print(){
-/*
+
     std::cerr << "MoveNum MoveDir" << std::endl;
 
     for(int i = 0 ; i < 60 ; ++i){
-        std::cerr << MOVE_NUM[i] << " ";
+        std::cerr << i << " | " << MOVE_NUM[i] << " ";
         for(int j = 0 ; j < 4 ; ++j){
             std::cerr << MOVE_DIR[i][j] << " ";
         }
@@ -155,13 +150,13 @@ void RuleTable::print(){
     std::cerr << "JumpNum JumpDir" << std::endl;
 
     for(int i = 0 ; i < 60 ; ++i){
-        std::cerr << JUMP_NUM[i] << " ";
+        std::cerr << i << " | " << JUMP_NUM[i] << " ";
         for(int j = 0 ; j < 4 ; ++j){
             std::cerr << JUMP_DIR[i][j] << " ";
         }
         std::cerr << std::endl;
     }
-*/
+
     std::cerr << "LEGAL_EAT_ARRAY" << std::endl;
     for(int i = 0 ; i < 18 ; ++i){
         for(int j = 0 ; j < 18 ; ++j){
@@ -172,37 +167,43 @@ void RuleTable::print(){
         }
         std::cerr << std::endl;
     }
+
+    for(int i = 0 ; i < 60 ; ++i){
+        if(RuleTable::isInside(i)){
+            std::cerr << "pos : " << i << " is inside" << std::endl;
+        }
+    }
 };
 
 
-/*
-0 : BothWithKing
-1 : EnemyWithoutKing
-2 : WithoutKing
-3 : BothWithoutKing
-*/
+
 void RuleTable::setScoreStrategyByBoard(Board* board){
-    bool withKing = board->alivePieces[board->ply][0];
-    bool enemyWithKing = board->alivePieces[!board->ply][0];
-    if(enemyWithKing)
-    {
-        if(withKing) setScoreStrategy(0);   
-        else setScoreStrategy(2);   
+    /*
+    for(int i = 0 ; i < 18 ; ++i){
+        CAN_EAT_NUM[i] = 0;
     }
-    else
-    {
-        if(withKing) setScoreStrategy(1);   
-        else setScoreStrategy(3);   
+    for(int i = 0 ; i < 15 ; ++i){
+        if(i==7)  continue;
+        for(int j = 0; j < 32 ; ++j)
+        {
+            int tp = board->pieces[j].piece;
+            if(tp>=0 && tp <= 17 && LEGAL_EAT_ARRAY[i][tp])
+            {
+                CAN_EAT_NUM[i]+=1;
+            }
+        }
     }
+    
+    for(int i = 0 ; i < 15 ; ++i){
+        if(i==7)  continue;
+        PIECE_SCORE[i] = PIECE_SCORE_BASIC[i]*int(bool(CAN_EAT_NUM[i]))+CAN_EAT_NUM[i]+1;
+        std::cerr << PIECE_SCORE[i] << "   ||  "; 
+    }
+    std::cerr << std::endl;
+    */
 };
 
-void RuleTable::setScoreStrategy(int strategy){
-    if(currentState==strategy) return;
-    currentState = strategy;
-    for(int i = 0 ; i < 18 ; ++i){
-        PIECE_SCORE[i] = PIECE_SCORE_GROUP[strategy][i];
-    }
-};
+
 
 int RuleTable::getPieceScore(char piece){
     return PIECE_SCORE[piece];

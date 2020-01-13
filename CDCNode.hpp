@@ -6,12 +6,11 @@ class CDCNode{
     public:
         Board* board;
         ULL hashValue;
-        char hashState;
         bool isFlipNode;
-        int lowerBound;
-        int upperBound;
+        int score;
         char nodeType;
         int depth;
+        int childIndex;
         std::pair<char,char> move;
         CDCNode* parent;
         CDCNode* children[70]; //86? move 16*4 + jump 4 + flip 1
@@ -20,8 +19,9 @@ class CDCNode{
         bool growChild();
         double getChanceScore(); // for chanceNode
         int getMinMaxScore();  // for chanceNode
-        //int getNegaScoutScore();
-
+        void growMinMaxTree(CDCNode*, int);
+        void copy(Board*, char type);
+        void copy(CDCNode*, std::pair<char,char> move, bool f);
         CDCNode(Board*, char type); // init
         CDCNode(CDCNode*, std::pair<char,char> move, bool f);
         ~CDCNode();

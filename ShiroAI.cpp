@@ -87,7 +87,7 @@ void setScoreStrategyByCurrentBoard(Board* board){
 
 int main(){
     RuleTable::initRuleTable();
-    RuleTable::print();
+    //RuleTable::print();
     ZobristHashTable::initStaticValue();
 
     bool isEnd = false;
@@ -113,18 +113,24 @@ int main(){
 
         while(rc<0)
         {
+            
             if(root!=nullptr)
             {
-                std::cout << "clean" << std::endl;
+                std::cerr << "clean" << std::endl;
                 delete root;
                 root = nullptr;
+                std::cerr << "clean end" << std::endl;
             }
+            
             //pondering
+            
             if(getppid()==1){
                 exit(0);
             }
-            sleep(1);
+            usleep(50);
+            //std::cout << "[wait]" << std::endl;
             rc = connect(sd, (struct sockaddr *)&serveraddr, SUN_LEN(&serveraddr));
+            //std::cout << "[get]" << std::endl;
         }
         
         // recv command
@@ -162,28 +168,17 @@ int main(){
                     std::cerr << "(client) get command : move" << std::endl;
                     myBoard->move((buffer[1]-'a'+1)*10+(buffer[2]-'0'),(buffer[4]-'a'+1)*10+(buffer[5]-'0'));
                     buffer[0] = 'm';
+                    //myBoard->printBoard();
                     break;
                 case 'f':
                     std::cerr << "(client) get command : flip" << std::endl;
                     myBoard->flip((buffer[1]-'a'+1)*10+(buffer[2]-'0'),convertToPiece(buffer[4]));
                     buffer[0] = 'f';
+                    //myBoard->printBoard();
                     break;
                 case 'g':
                 {
                     std::cerr << "(client) get command : genmove" << std::endl;
-                    myBoard->moveListGenerator->handle(myBoard);
-                    setScoreStrategyByCurrentBoard(myBoard);
-                    std::cout << "Before move my board score is : " << myBoard->getScore() << std::endl;
-                    std::vector<std::pair<char,char>> a;
-                    myBoard->moveListGenerator->genPossibleFlipPosition(myBoard,&a);
-                    if(a.size()==0)
-                    {
-                        std::cout << "BestFlipPosition X " << std::endl;
-                    }
-                    else
-                    {
-                        std::cout << "BestFlipPosition is : " << int(a[0].first) << std::endl;
-                    }
 
                     std::pair<char,char> result;
                     if(buffer[1]=='r')
@@ -197,9 +192,13 @@ int main(){
                         myBoard->rootPly = 1;
                     }
 
+                    myBoard->moveListGenerator->handle(myBoard);
+                    setScoreStrategyByCurrentBoard(myBoard);
+                    std::cerr << "Before move my board score is : " << myBoard->getScore() << std::endl;
+
                     //negaScout
                     root = new CDCNode(myBoard, 1); 
-                    result = NegaScoutController::iterativeDeepening(root,10);
+                    result = NegaScoutController::iterativeDeepening(root,2);
                     std::cerr << "get result" << result.first << "," << result.second << std::endl;
 
                     std::cerr << "out" << std::endl;

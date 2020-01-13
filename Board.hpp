@@ -33,10 +33,10 @@
 
 class Board{
     public:
-        static const int oriAlivePieces[7];
-        static const int oriConvertPieceToPiecesIndex[18];
-        static const int convertPiecesIndexToPiece[35]; 
-        static const int oriDarkPieceNum[2][7];
+        static const char oriAlivePieces[7];
+        static const char oriConvertPieceToPiecesIndex[18];
+        static const char convertPiecesIndexToPiece[35]; 
+        static const char oriDarkPieceNum[2][7];
         static const double possibilityHelper[33];
         MoveListGenerator* moveListGenerator;
         std::vector<std::pair<char, char>> moveList;
@@ -45,13 +45,13 @@ class Board{
         bool ply;
         Piece pieces[35];
         Piece* pieceList[2][16];
-        int numPiecesInList[2];   
-        int alivePieces[2][7]  = {{1,2,2,2,2,2,5},{1,2,2,2,2,2,5}};
-        int numAlivePieces[2];
-        int convertPieceToPiecesIndex[18] = {0,1,3,5,7,9,11,-1,16,17,19,21,23,25,27,-1,32,-1};
+        char numPiecesInList[2];   
+        char alivePieces[2][7]  = {{1,2,2,2,2,2,5},{1,2,2,2,2,2,5}};
+        char numAlivePieces[2];
+        char convertPieceToPiecesIndex[18] = {0,1,3,5,7,9,11,60,16,17,19,21,23,25,27,33,32,34};
         double flipPossibility [2][7];
-        int darkPieceNum [2][7];
-        int darkPieceNumAll;
+        char darkPieceNum [2][7];
+        char darkPieceNumAll;
 
         void initBoard(); // Version 0.4.3 
         bool move(char from, char to); // Version 0.4.3
@@ -60,9 +60,12 @@ class Board{
         int addPiece(Piece* piece, bool ply); //addPieceToPieceList Version 0.4.3
         std::pair<char,char> genMove();
         void setMoveList(); //Version 0.5.1
+        void setEatPosition(std::vector<std::pair<char,char>>* );
         bool isLegalMove(int from, int to, bool ply); //Version 0.5.1
         void updateFlipPossibility();
         int getScore();
+        void printBoard();
+        void duplicate(Board*);
 
         Board(){
 

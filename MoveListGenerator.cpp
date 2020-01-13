@@ -73,13 +73,154 @@ void MoveListGenerator::genPossibleMove(Board* board, std::vector<std::pair<char
     int pos = piece->position;
 
     for(int i = 0 ; i < RuleTable::MOVE_NUM[pos] ; ++i){
-        Piece* targetPiece = board->board[pos + RuleTable::MOVE_DIR[pos][i]];
-        if(targetPiece->piece == EMPTY)
+        int targetPosition = pos + RuleTable::MOVE_DIR[pos][i];
+        if(RuleTable::isInside(targetPosition))
         {
-            moveVector->emplace_back(std::make_pair(pos, pos + RuleTable::MOVE_DIR[pos][i]));
+            if(board->board[targetPosition]->piece == EMPTY)
+            {
+                moveVector->emplace_back(std::make_pair(pos, targetPosition));
+            }
         }
     }
 };
+
+void MoveListGenerator::possibleEatList(Board* board, std::vector<Piece*>* killerList, std::vector<Piece*>* eatList, int* eatIndex, Piece* piece){
+    int p = piece->piece;
+    int pos = piece->position;
+    // Legal Eat
+    if((p&7) == UC) //炮 包
+    {
+        // Pao Eat
+        for(int i = 0 ; i < RuleTable::JUMP_NUM[pos] ; ++i){
+            bool cross = false;
+            int targetPos = pos + RuleTable::JUMP_DIR[pos][i];
+            while(RuleTable::isInside(targetPos)){
+                if(!cross && board->board[targetPos]->piece != EMPTY)
+                {
+                    cross = true;
+                    targetPos += RuleTable::JUMP_DIR[pos][i];
+                }
+                else if(board->board[targetPos]->piece == EMPTY)
+                {
+                    targetPos += RuleTable::JUMP_DIR[pos][i];
+                }
+                else if(board->board[targetPos]->dark || ((board->board[targetPos]->piece)>>3)==(p>>3))
+                {
+                    break;
+                }
+                else
+                {
+                    (*eatIndex)++;
+                    killerList->emplace_back(piece);
+                    eatList->emplace_back(board->board[targetPos]);
+                    /*
+                    int score = RuleTable::PIECE_SCORE[board->board[targetPos]->piece];
+                    int low = 0;
+                    int high = killerList->size();
+                    int index = high/2;
+
+                    while(index>low && index < high){
+                        if(score < RuleTable::PIECE_SCORE[(*eatList)[index]->piece])
+                        {
+                            high = index;
+                            index = (index+low)/2; 
+                        }
+                        else if(score > RuleTable::PIECE_SCORE[(*eatList)[index]->piece])
+                        {
+                            low = index;
+                            index = (index+high)/2;
+                        }
+                        else
+                        {
+                            killerList->insert(killerList->begin()+index,piece);
+                            eatList->insert(eatList->begin()+index,board->board[targetPos]);
+                            break;
+                        }
+                    }
+                    
+                    if(index==low || index==high)
+                    {
+                        if(index >= killerList->size())
+                        {
+                            killerList->insert(killerList->begin()+index,piece);
+                            eatList->insert(eatList->begin()+index,board->board[targetPos]);
+                        }
+                        else if(score > RuleTable::PIECE_SCORE[(*eatList)[index]->piece])
+                        {
+                            killerList->insert(killerList->begin()+index+1,piece);
+                            eatList->insert(eatList->begin()+index+1,board->board[targetPos]);
+                        }
+                        else
+                        {
+                            killerList->insert(killerList->begin()+index,piece);
+                            eatList->insert(eatList->begin()+index,board->board[targetPos]);
+                        }
+                    }
+                    */
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        for(int i = 0 ; i < RuleTable::MOVE_NUM[pos] ; ++i){
+            int targetPosition = pos + RuleTable::MOVE_DIR[pos][i];
+            if(RuleTable::isInside(targetPosition))
+            {
+                if(RuleTable::LEGAL_EAT_ARRAY[p][board->board[targetPosition]->piece])
+                {
+                    (*eatIndex)++;
+                    killerList->emplace_back(piece);
+                    eatList->emplace_back(board->board[targetPosition]);
+                    /*
+                    int score = RuleTable::PIECE_SCORE[board->board[targetPosition]->piece];
+                    int low = 0;
+                    int high = killerList->size();
+                    int index = high/2;
+                    while(index>low && index < high){
+                        if(score < RuleTable::PIECE_SCORE[(*eatList)[index]->piece])
+                        {
+                            high = index;
+                            index = (index+low)/2; 
+                        }
+                        else if(score > RuleTable::PIECE_SCORE[(*eatList)[index]->piece])
+                        {
+                            low = index;
+                            index = (index+high)/2;
+                        }
+                        else
+                        {
+                            killerList->insert(killerList->begin()+index,piece);
+                            eatList->insert(eatList->begin()+index,board->board[targetPosition]);
+                            break;
+                        }
+                    }
+                   
+                    if(index==low || index==high)
+                    {
+                        if(index >= killerList->size())
+                        {
+                            killerList->insert(killerList->begin()+index,piece);
+                            eatList->insert(eatList->begin()+index,board->board[targetPosition]);
+                        }
+                        else if(score > RuleTable::PIECE_SCORE[(*eatList)[index]->piece])
+                        {
+                            killerList->insert(killerList->begin()+index+1,piece);
+                            eatList->insert(eatList->begin()+index+1,board->board[targetPosition]);
+                        }
+                        else
+                        {
+                            killerList->insert(killerList->begin()+index,piece);
+                            eatList->insert(eatList->begin()+index,board->board[targetPosition]);
+                        }
+                    }
+                    */
+                }
+            }
+        }
+    }
+}
 
 void MoveListGenerator::genPossibleEat(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece){
     
@@ -102,7 +243,7 @@ void MoveListGenerator::genPossibleEat(Board* board, std::vector<std::pair<char,
                 {
                     targetPos += RuleTable::JUMP_DIR[pos][i];
                 }
-                else if(board->board[targetPos]->dark || (board->board[targetPos]->piece>>3)==(p>>3))
+                else if(board->board[targetPos]->dark || ((board->board[targetPos]->piece)>>3)==(p>>3))
                 {
                     break;
                 }
@@ -117,10 +258,13 @@ void MoveListGenerator::genPossibleEat(Board* board, std::vector<std::pair<char,
     else
     {
         for(int i = 0 ; i < RuleTable::MOVE_NUM[pos] ; ++i){
-            Piece* targetPiece = board->board[pos + RuleTable::MOVE_DIR[pos][i]];
-            if(RuleTable::LEGAL_EAT_ARRAY[p][targetPiece->piece])
+            int targetPosition = pos + RuleTable::MOVE_DIR[pos][i];
+            if(RuleTable::isInside(targetPosition))
             {
-                moveVector->emplace_back(std::make_pair(pos, pos + RuleTable::MOVE_DIR[pos][i])); // push eat first
+                if(RuleTable::LEGAL_EAT_ARRAY[p][board->board[targetPosition]->piece])
+                {
+                    moveVector->emplace_back(std::make_pair(pos, targetPosition)); 
+                }
             }
         }
     }
@@ -194,8 +338,8 @@ void MoveListGenerator::genPossibleFlipPosition(Board* board, std::vector<std::p
     //目前可能翻給炮吃
     if((board->darkPieceNum[board->ply][UG] != 0) || (board->darkPieceNum[board->ply][UM] != 0))
     {
-        char possibleEatPos = 0;
-        char possibleEatValue = 0;
+        possibleEatPos = 0;
+        possibleEatValue = 0;
         for(int i = 0 ; i < board->numPiecesInList[!board->ply] ; ++i){
             int score = RuleTable::getPieceScore(board->pieceList[!board->ply][i]->piece);
             if(possibleEatValue > score) continue;

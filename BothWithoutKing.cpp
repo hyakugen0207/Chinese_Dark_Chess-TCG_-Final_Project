@@ -15,7 +15,7 @@ std::vector<std::pair<char,char>> BothWithoutKing::moveVector[14];
 士  70       士  70
 像  15       像  15
 俥  5        俥  5
-馬  2        馬  2
+馬  2        馬  2s
 炮  19       炮  19
 兵  1        兵  1
 */

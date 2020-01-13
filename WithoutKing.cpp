@@ -23,6 +23,7 @@ std::vector<std::pair<char,char>> WithoutKing::moveVector[14];
 
 
 void WithoutKing::handle(Board* board)const{
+    
     bool enemyWithKing = board->alivePieces[!board->ply][0];
     if(enemyWithKing)
     {
@@ -34,6 +35,7 @@ void WithoutKing::handle(Board* board)const{
         //std::cout << "change state from WithoutKing to BothWithoutKing" << std::endl;
         delete this; 
     }
+    
 };
 
 MoveListGenerator* WithoutKing::duplicate()const{

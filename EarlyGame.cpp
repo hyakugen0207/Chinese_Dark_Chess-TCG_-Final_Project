@@ -22,14 +22,11 @@ const int EarlyGame::flipPriority[32] =
 
 void EarlyGame::genMoveList(Board* board) const{
 
-    std::cerr << "Debug : in genMoveList" << std::endl;
     // vector第一個放<0,0> 確認用
     board->moveList.clear();
     board->moveList.emplace_back(std::make_pair(0,0));
-    std::cerr << "Debug : board->moveList[0] is (" << board->moveList[0].first << "," << board->moveList[0].second << ")" << std::endl;
     if(board->numPiecesInList[0]==0 && board->numPiecesInList[1]==0) //first move
     {
-        std::cerr << "Debug : in genMove first move" << std::endl;
         board->moveList.emplace_back(std::make_pair(12,12)); //just flip
     }
     else
@@ -40,11 +37,9 @@ void EarlyGame::genMoveList(Board* board) const{
             std::pair<char,char> move;
             // 炮 or 仕 try to eat
             for(int i = 0 ; i < board->numPiecesInList[board->ply]; ++i){
-                std::cerr << "Debug : in no piece pao or shi" << std::endl;
                 Piece* myPiece = board->pieceList[board->ply][i];
                 if(((myPiece->piece)&7) == 5) //炮 包
                 { 
-                    std::cerr << "Debug : in no piece pao " << std::endl;
                     //翻一個包可以吃的地方
                     int jumpNum = RuleTable::JUMP_NUM[myPiece->position];
                     for(int j = 0 ; j < jumpNum ; ++j){ 
@@ -69,11 +64,9 @@ void EarlyGame::genMoveList(Board* board) const{
                             pos += RuleTable::JUMP_DIR[myPiece->position][j];
                         }
                     }
-                    std::cerr << "Debug : end no piece pao " << std::endl;
                 }
                 else if(p!=5 && (((myPiece->piece)&7) == 1)) //仕 士
                 { 
-                    std::cerr << "Debug : in no piece shi " << std::endl;
                     //翻一個仕可以吃的地方
                     int moveNum = RuleTable::MOVE_NUM[myPiece->position];
                     for(int j = 0 ; j < moveNum ; ++j){
@@ -85,13 +78,11 @@ void EarlyGame::genMoveList(Board* board) const{
                             break;
                         }
                     }
-                    std::cerr << "Debug : end no piece shi " << std::endl;
                 }
             }
             
             if(p==17) //沒士沒包 翻安全的
             {
-                std::cerr << "Debug : in no piece other " << std::endl;
                 //find save position to flip 
                 for(int i = 0 ; i < 32 ; ++i){
                     int pos = flipPriority[i];
@@ -155,7 +146,6 @@ void EarlyGame::genMoveList(Board* board) const{
             }
             else
             {
-                std::cerr << "Debug : do no piece pao or shi " << std::endl;
                 board->moveList.emplace_back(std::make_pair(move.first,move.second));
                 return;
             }
@@ -176,7 +166,6 @@ void EarlyGame::genMoveList(Board* board) const{
                 board->moveList.emplace_back(std::make_pair(move.first,move.second));
                 return;
             }
-            std::cerr << "Debug : pao" << std::endl;
             // 包 flip
             for(int i = 0 ; i < board->numPiecesInList[!board->ply] && !getFlip ; ++i){
                 // 2020.01.05 先隨便找一隻翻包的位置 之後可以改
@@ -207,18 +196,15 @@ void EarlyGame::genMoveList(Board* board) const{
                             }
                             
                             pos += RuleTable::JUMP_DIR[hisPiece->position][j];
-                            std::cerr << "Debug : in pao pos : " << pos << std::endl;
                         }
                     }
                 }   
             }
-             std::cerr << "Debug : end pao" << std::endl;
             if(getFlip)
             {
                 board->moveList.emplace_back(std::make_pair(move.first,move.second));
                 return;
             }
-             std::cerr << "Debug : cannot flip" << std::endl;
             //no eat and killer flip 隨便翻一個
             for(int i = 0 ; i < 32 ; ++i){
                 int pos = flipPriority[i];
@@ -238,8 +224,8 @@ int EarlyGame::getScore(Board* board) const{
 };
 
 void EarlyGame::handle(Board* board)const{
-    std::cout << board->numAlivePieces[board->ply] << "," << board->numPiecesInList[board->ply] << std::endl;
-    if(board->numAlivePieces[board->ply] < 15 || board->numPiecesInList[board->ply] > 5)
+    //std::cout << board->numAlivePieces[board->ply] << "," << board->numPiecesInList[board->ply] << std::endl;
+    if(board->numAlivePieces[board->ply] < 17 || board->numPiecesInList[board->ply] > 7)
     {
         bool enemyWithKing = board->alivePieces[!board->ply][0];
         bool withKing = board->alivePieces[board->ply][0];
@@ -248,12 +234,12 @@ void EarlyGame::handle(Board* board)const{
             if(withKing)
             {
                 board->moveListGenerator = new BothWithKing();
-                std::cout << "change state from EarlyGame to BothWithKing" << std::endl;
+                std::cerr << "change state from EarlyGame to BothWithKing" << std::endl;
             }
             else
             {
                 board->moveListGenerator = new WithoutKing();
-                std::cout << "change state from EarlyGame to WithoutKing" << std::endl;
+                std::cerr << "change state from EarlyGame to WithoutKing" << std::endl;
             }
         }
         else
@@ -261,12 +247,12 @@ void EarlyGame::handle(Board* board)const{
             if(withKing)
             {
                 board->moveListGenerator = new EnemyWithoutKing();
-                std::cout << "change state from EarlyGame to EnemyWithoutKing" << std::endl;
+                std::cerr << "change state from EarlyGame to EnemyWithoutKing" << std::endl;
             }
             else
             {
                 board->moveListGenerator = new BothWithoutKing();
-                std::cout << "change state from EarlyGame to BothWithoutKing" << std::endl;
+                std::cerr << "change state from EarlyGame to BothWithoutKing" << std::endl;
             }
         }
         delete this;

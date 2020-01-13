@@ -18,7 +18,7 @@ class MoveListGenerator
         static void genPossibleMove(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece);
         static void genPossibleEat(Board* board, std::vector<std::pair<char, char>>* moveVector, Piece* piece);
         static void genPossibleFlipPosition(Board* board, std::vector<std::pair<char, char>>* moveVector);
-        
+        static void possibleEatList(Board* board, std::vector<Piece*>* killerList, std::vector<Piece*>* eatList, int* eatIndex, Piece* piece);
         virtual ~MoveListGenerator();
 };
 
