@@ -259,10 +259,12 @@ void MoveListGenerator::genPossibleEat(Board* board, std::vector<std::pair<char,
     {
         for(int i = 0 ; i < RuleTable::MOVE_NUM[pos] ; ++i){
             int targetPosition = pos + RuleTable::MOVE_DIR[pos][i];
+            //std::cerr << targetPosition << "," << pos << "," << RuleTable::isInside(targetPosition) << "," << RuleTable::LEGAL_EAT_ARRAY[p][board->board[targetPosition]->piece] << "," << int(board->board[targetPosition]->piece) << std::endl;
             if(RuleTable::isInside(targetPosition))
             {
                 if(RuleTable::LEGAL_EAT_ARRAY[p][board->board[targetPosition]->piece])
                 {
+                    //std::cerr << "emplace_back" << std::endl;
                     moveVector->emplace_back(std::make_pair(pos, targetPosition)); 
                 }
             }

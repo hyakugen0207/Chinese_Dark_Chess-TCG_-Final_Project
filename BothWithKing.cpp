@@ -6,7 +6,7 @@
 
 const char BothWithKing::moveOrder[7] = {UG, UK, UC, UP, UM, UR, UN}; 
 const char BothWithKing::eatOrder[7] = {UP, UC, UG, UK, UM, UR, UN}; 
-const char BothWithKing::mixOrder[14] = {1,1,1,0,1,0,1,1,1,0,0,0,0,0}; // 0 = move | 1 = eat
+const char BothWithKing::mixOrder[14] = {1,1,1,0,1,0,0,1,1,1,0,0,0,0}; // 0 = move | 1 = eat
 std::vector<std::pair<char,char>> BothWithKing::moveVector[14];
 //兵吃人基本上不會虧 / 炮不吃可能被跑掉 / 帥吃將或士用rule解決
 

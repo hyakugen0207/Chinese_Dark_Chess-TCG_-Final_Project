@@ -14,9 +14,10 @@ void MidGame::genMoveList(Board* board) const{
     //clean
     for(int i = 0 ; i < sizeof(mixOrder) ; ++i) moveVector[i].clear();
     //genPossibleMove
+    //std::cerr << "XXX" << std::endl;
     for(int i = 0 ; i < board->numPiecesInList[board->ply] ; ++i){
         Piece* currentPiece = board->pieceList[board->ply][i];
-        if(currentPiece->piece==DEAD) std::cerr << "GGGGGG" << std::endl;
+        //std::cerr << "currentPiece" << int(currentPiece->piece) << "," << int(((currentPiece->piece)&7)+7) << std::endl;
         genPossibleEat(board, &(moveVector[((currentPiece->piece)&7)+7]), currentPiece);
         genPossibleMove(board, &(moveVector[((currentPiece->piece)&7)]), currentPiece);
     }
@@ -39,9 +40,9 @@ void MidGame::genMoveList(Board* board) const{
         }
         else
         { 
-            if(moveVector[eatOrder[e_index]].empty())
+            if(moveVector[eatOrder[e_index]+7].empty())
             {
-                e_index++;
+               e_index++;
                 continue;
             }
             board->moveList.insert(board->moveList.end(), moveVector[eatOrder[e_index]+7].begin(), moveVector[eatOrder[e_index]+7].end());
@@ -49,8 +50,10 @@ void MidGame::genMoveList(Board* board) const{
             e_index++;
         }
     }
+    //std::cerr << "genmove" << board->moveList.size() << std::endl;
     //append flip
     if(board->darkPieceNumAll>0) genPossibleFlipPosition(board, &(board->moveList));
+    //std::cerr << "[genmove]" << board->moveList.size() << std::endl;
 };
 
 

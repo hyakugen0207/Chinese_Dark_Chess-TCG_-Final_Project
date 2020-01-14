@@ -369,6 +369,8 @@ Board::Board(Board* oldBoard){
 
 int Board::getScore(){
 
+    if(this->numAlivePieces[!rootPly]==0) return 20000;
+    else if(this->numAlivePieces[rootPly]==0) return -8000;
     int score = 0;
     int offset = 0;
     if(rootPly)offset = 8;
@@ -377,20 +379,70 @@ int Board::getScore(){
     std::vector<Piece*> enemyKillerList;
     std::vector<Piece*> enemyKillList;
     int myKillIndex = -1; int enemyKillIndex = -1;
+
+    for(int i = 0 ; i < 18 ; ++i){
+        RuleTable::CAN_EAT_NUM[i] = 0;
+    }
+    for(int i = 0 ; i < 15 ; ++i){
+        if(i==7 || i==5 || i==13)  continue;
+        for(int j = (i&7) ; j < 7 ; ++j)    
+        {
+            if(i<7)RuleTable::CAN_EAT_NUM[i] += this->alivePieces[!rootPly][j];
+            else RuleTable::CAN_EAT_NUM[i] += this->alivePieces[rootPly][j];
+        }    
+    }
+    RuleTable::CAN_EAT_NUM[0] -= this->alivePieces[!rootPly][6];
+    RuleTable::CAN_EAT_NUM[8] -= this->alivePieces[rootPly][6];
+    RuleTable::CAN_EAT_NUM[6] += this->alivePieces[!rootPly][0];
+    RuleTable::CAN_EAT_NUM[14] += this->alivePieces[rootPly][0];
+    RuleTable::CAN_EAT_NUM[5] = this->numAlivePieces[!rootPly] + (this->alivePieces[!rootPly][0]<<2) + (this->alivePieces[!rootPly][1]<<1);
+    RuleTable::CAN_EAT_NUM[13] = this->numAlivePieces[rootPly] + (this->alivePieces[rootPly][0]<<2) + (this->alivePieces[rootPly][1]<<1);
     for(int i = 0 ; i < numPiecesInList[rootPly] ; ++i){
-        score += RuleTable::PIECE_SCORE[(pieceList[rootPly][i]->piece)-offset]; 
-        moveListGenerator->possibleEatList(this,&myKillerList, &myKillList, &myKillIndex, pieceList[rootPly][i]);
+        int index = (pieceList[rootPly][i]->piece)-offset;
+        if(index==6)
+        {
+            score += RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[1][0]))+RuleTable::CAN_EAT_NUM[index]+1;
+            //std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[!rootPly][0]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
+        }
+        else if(index==14)
+        {
+            score += RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[0][0]))+RuleTable::CAN_EAT_NUM[index]+1;
+            //std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[rootPly][0]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
+        }
+        else
+        {
+            score += RuleTable::PIECE_SCORE_BASIC[index]+RuleTable::CAN_EAT_NUM[index]+1;
+            //std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(RuleTable::CAN_EAT_NUM[index]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
+        }
+        
+        //moveListGenerator->possibleEatList(this,&myKillerList, &myKillList, &myKillIndex, pieceList[rootPly][i]);
     }
     for(int i = 0 ; i < numPiecesInList[!rootPly] ; ++i){
-        score -= RuleTable::PIECE_SCORE[(pieceList[!rootPly][i]->piece)+offset];
-        moveListGenerator->possibleEatList(this, &enemyKillerList, &enemyKillList, &enemyKillIndex, pieceList[!rootPly][i]);
+        int index = (pieceList[!rootPly][i]->piece)+offset;
+        if(index==6)
+        {
+            score -= RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[1][0]))+RuleTable::CAN_EAT_NUM[index]+1;
+            //std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[!rootPly][0]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
+        }
+        else if(index==14)
+        {
+            score -= RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[0][0]))+RuleTable::CAN_EAT_NUM[index]+1;
+           // std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[rootPly][0]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
+        }
+        else
+        {
+            score -= RuleTable::PIECE_SCORE_BASIC[index]+RuleTable::CAN_EAT_NUM[index]+1;
+           // std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(RuleTable::CAN_EAT_NUM[index]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
+        }
+        //moveListGenerator->possibleEatList(this, &enemyKillerList, &enemyKillList, &enemyKillIndex, pieceList[!rootPly][i]);
     }
-    
+    //std::cerr << "========"<< std::endl;
+    /*
     while(myKillIndex>=0 && enemyKillIndex>=0){ //有可以a吃到b後跑掉 c吃不到a 但是先不考慮
         while(myKillIndex>=0){
             if(myKillerList[myKillIndex]!=nullptr)
             {
-                score += RuleTable::PIECE_SCORE[(myKillList[myKillIndex]->piece)+offset];
+                score += RuleTable::PIECE_SCORE_BASIC[(myKillList[myKillIndex]->piece)+offset];
                 for(int x = myKillIndex-1 ; x >= 0 ; --x){
                     if(myKillList[x]!=nullptr && myKillList[myKillIndex]==myKillList[x])
                     {
@@ -416,7 +468,7 @@ int Board::getScore(){
         while(enemyKillIndex>=0){
             if(enemyKillerList[enemyKillIndex]!=nullptr)
             {
-                score -= RuleTable::PIECE_SCORE[(enemyKillList[enemyKillIndex]->piece)-offset];
+                score -= RuleTable::PIECE_SCORE_BASIC[(enemyKillList[enemyKillIndex]->piece)-offset];
                 for(int x = enemyKillIndex-1 ; x >= 0 ; --x){
                     if(enemyKillList[x]!=nullptr && enemyKillList[myKillIndex]==enemyKillList[x])
                     {
@@ -440,7 +492,9 @@ int Board::getScore(){
             }            
         }   
     }  
-    
+    */
+   score += ((this->numAlivePieces[rootPly] - this->numAlivePieces[!rootPly])<<5);
+
     return score;
 };
 

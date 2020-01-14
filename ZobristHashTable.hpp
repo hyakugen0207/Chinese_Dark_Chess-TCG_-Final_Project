@@ -13,9 +13,14 @@ class HashNode{
         ULL key;
         int depth;
         int value;
-        bool ply;
-        char nextMove;
-        bool isSame(ULL compareKey);
+        char exact; // 0 = lower , 1 = upper , 2 = exact
+        std::pair<char,char> nextMove;
+        bool isSame(ULL compareKey){
+            return compareKey==this->key;
+        };
+
+        HashNode(): key(-1), depth(-1), value(-20000),exact(0),nextMove(std::make_pair(99,99)){};
+    
 };
 
 

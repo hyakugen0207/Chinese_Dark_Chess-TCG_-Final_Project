@@ -159,7 +159,7 @@ int main(){
         }
 
         myBoard->moveListGenerator->handle(myBoard);
-        setScoreStrategyByCurrentBoard(myBoard);
+        //setScoreStrategyByCurrentBoard(myBoard);
         //std::cerr << "Before move my board score is : " << myBoard->getScore() << std::endl;
 
         //negaScout
@@ -170,7 +170,7 @@ int main(){
             root->copy(myBoard, 1);
         }
         
-        result = NegaScoutController::iterativeDeepening(root,2);
+        result = NegaScoutController::iterativeDeepening(root,10);
         if(result.first==0)
         {
             std::cerr << "GGGGG" << std::endl;

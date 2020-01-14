@@ -73,13 +73,12 @@ void CDCNode::copy(CDCNode* p, std::pair<char,char> m, bool isFlip){
     this->board->duplicate(p->board);
 
     this->isFlipNode = isFlip;
-    //hashState = RuleTable::currentState;
     if(this->isFlipNode)
     {
         //std::cerr << "new child CDCNode isFlip" << int(m.first) << "," << int(m.second) << std::endl;
         this->nodeType = 2;
         this->depth = p->depth+1;
-        //hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first);
+        this->hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first);
         this->board->flip(m.first,m.second);
         //std::cerr << "new child CDCNode isFlip done" << std::endl;
     }
@@ -97,7 +96,7 @@ void CDCNode::copy(CDCNode* p, std::pair<char,char> m, bool isFlip){
         {
             //std::cerr << "new child CDCNode is move" << int(m.first) << "," << int(m.second) << std::endl;
             this->depth = p->depth+1;
-            //hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first,m.second);
+            this->hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first,m.second);
             this->board->move(m.first,m.second); 
             //std::cerr << "new child CDCNode is move done" << std::endl;
         }
@@ -140,13 +139,12 @@ CDCNode::CDCNode(CDCNode* p, std::pair<char,char> m, bool isFlip){
     this->board = new Board(p->board);
     //std::cerr << "new child CDCNode2" << std::endl;
     this->isFlipNode = isFlip;
-    //hashState = RuleTable::currentState;
     if(this->isFlipNode)
     {
         //std::cerr << "new child CDCNode isFlip" << int(m.first) << "," << int(m.second) << std::endl;
         this->nodeType = 2;
         this->depth = p->depth+1;
-        //hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first);
+        this->hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first);
         this->board->flip(m.first,m.second);
         //std::cerr << "new child CDCNode isFlip done" << std::endl;
     }
@@ -164,7 +162,7 @@ CDCNode::CDCNode(CDCNode* p, std::pair<char,char> m, bool isFlip){
         {
             //std::cerr << "new child CDCNode is move" << int(m.first) << "," << int(m.second) << std::endl;
             this->depth = p->depth+1;
-            //hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first,m.second);
+            this->hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first,m.second);
             this->board->move(m.first,m.second); 
             //std::cerr << "new child CDCNode is move done" << std::endl;
         }
@@ -178,6 +176,7 @@ void CDCNode::copy(Board* b, char type){
     this->parent = nullptr;
     this->board->duplicate(b);
     this->isFlipNode = false;
+    this->hashValue = ZobristHashTable::updateHashValue(this->board);
     this->score = -20000;
     this->childIndex = 0;
     /*
@@ -196,7 +195,7 @@ CDCNode::CDCNode(Board* b, char type){
     this->board = new Board(b);
     this->isFlipNode = false;
     //hashState = RuleTable::currentState;
-    //hashValue = ZobristHashTable::updateHashValue(this->board);
+    this->hashValue = ZobristHashTable::updateHashValue(this->board);
     this->score = -20000;
     this->childIndex = 0;
     /*

@@ -4,6 +4,7 @@
 #include <climits>
 #include <unistd.h>
 #include "NodePool.hpp"
+#include "ZobristHashTable.hpp"
 
 auto timer = [] ( bool reset = false ) -> double {
     static decltype(std::chrono::steady_clock::now()) tick, tock;
@@ -23,12 +24,13 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
     timeoff = false;
     //std::cerr << "1" << std::endl;
     std::pair<char,char> move = std::make_pair(0,0);
-    while(depth<12){
+    while(true){
         std::cerr << depth << std::endl;
         if(timer() > timeLimit) break;
         //std::cerr << "1.2" << std::endl;
         root->board->setMoveList();
-        //std::cerr << "1.3" << std::endl;
+
+        std::cerr << "1.3" << root->board->moveList.size() << std::endl;
         if(root->board->moveList.empty()) return std::make_pair(0,0); //no move
        // std::cerr << "1.4" << std::endl;
         if(root->board->moveList[0].first==0) return root->board->moveList[1]; //early game
@@ -129,6 +131,41 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
 
 int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta, double* timeLimit){
     //std::cerr << "a.1" << std::endl;
+    int currentLowerBound = -10000; // fail soft
+    int currentUpperBound = beta;
+    /*
+    ULL hashIndex = (node->hashValue)&(HASH_NODE_NUM-1);
+    //std::cerr << "hashIndex" << hashIndex << std::endl;
+    HashNode hashNode = ZobristHashTable::hashNodes[hashIndex];
+    //std::cerr << "hashNode" << std::endl;
+    int hashValueInTable = hashNode.value;
+    if(hashNode.isSame(node->hashValue)) //hit
+    {
+        //std::cerr << "hit" << std::endl;
+        if(depth <= hashNode.depth)
+        {
+            if(hashNode.exact==2)return hashValueInTable;
+            else if(hashNode.exact==1)  //upper
+            {
+                beta = std::min(beta,hashValueInTable);
+            }
+            else if(hashNode.exact==0) //lower
+            {
+                alpha = std::max(alpha, hashValueInTable);  
+            }
+
+            if(alpha>=beta) return hashValueInTable; //cut off
+        }
+        else
+        {
+            if(hashNode.exact==2)currentLowerBound = hashValueInTable;
+        }
+    }
+    else
+    {
+        //std::cerr << "no hit" << std::endl;
+    }
+    */
     if(timer() > (*timeLimit))
     {
        // std::cerr << "a.1.1" << std::endl;
@@ -142,6 +179,9 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
        // std::cerr << "a.2.1" << std::endl;
         return node->getScore();
     }
+
+    // if this board is in the hash table return value
+       
    // std::cerr << "a.3" << std::endl;
     node->board->setMoveList();
    // std::cerr << "a.4" << std::endl;
@@ -160,8 +200,6 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
         //std::cerr << "a.4.2" << std::endl;
     }
    // std::cerr << "a.5" << std::endl;
-    int currentLowerBound = -10000; // fail soft
-    int currentUpperBound = beta;
     int tmpScore;
     for(int i = 0 ; (i < node->board->moveList.size()); ++i){
         //std::cerr << "a.5.1" << std::endl;
@@ -202,7 +240,12 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
         }
         //std::cerr << "a.5.4" << std::endl;
         if(currentLowerBound >= beta)
-        {
+        {/*
+            hashNode.depth = depth;
+            hashNode.nextMove = node->move;
+            hashNode.key = node->hashValue;
+            hashNode.value = currentLowerBound;
+            hashNode.exact = 0;*/
             return currentLowerBound; // cut-off
         }
        // std::cerr << "a.5.5" << std::endl;
@@ -210,5 +253,23 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
        // std::cerr << "a.5.6" << std::endl;
     }
     //std::cerr << "a.6" << std::endl;
+    /*
+    if(currentLowerBound>alpha)
+    {
+        hashNode.nextMove = node->move;
+        hashNode.key = node->hashValue;
+        hashNode.value = currentLowerBound;
+        hashNode.exact = 2;
+        hashNode.depth = depth;
+    }
+    else
+    {
+        hashNode.depth = depth;
+        hashNode.nextMove = node->move;
+        hashNode.key = node->hashValue;
+        hashNode.value = currentLowerBound;
+        hashNode.exact = 1;
+    }
+    */
     return currentLowerBound;
 };
