@@ -59,13 +59,16 @@ class Board{
         void removePiece(int index, bool ply); //removePieceFromPieceList Version 0.4.3
         int addPiece(Piece* piece, bool ply); //addPieceToPieceList Version 0.4.3
         std::pair<char,char> genMove();
-        void setMoveList(); //Version 0.5.1
-        void setEatPosition(std::vector<std::pair<char,char>>* );
+        void setMoveList(int tag); //Version 0.5.1
+        bool haveEatMove();
         bool isLegalMove(int from, int to, bool ply); //Version 0.5.1
         void updateFlipPossibility();
         int getScore();
+        int getNoMoveScore();
+        int getRootScore();
         void printBoard();
         void duplicate(Board*);
+        int getState();
 
         Board(){
 

@@ -10,6 +10,25 @@ int RuleTable::DIR[4]; // {TOP, DOWN, LEFT, RIGHT} //ok
 int RuleTable::PIECE_SCORE[18] = {80,48,15,5,2,20,27,0,80,48,15,5,2,20,27,0,0,0};
 int RuleTable::PIECE_SCORE_BASIC[18] = {207,103,51,25,12,60,30,0,207,103,51,25,12,60,30,0,0,0};
 int RuleTable::CAN_EAT_NUM[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int RuleTable::rootState;
+int RuleTable::POSITION_SCORE[60] = {
+    0,0,0,0,0,0,0,0,0,0,
+    0,2,3,3,3,3,3,3,2,0,
+    0,3,4,4,5,5,4,4,3,0,
+    0,3,4,4,5,5,4,4,3,0,
+    0,2,3,3,3,3,3,3,2,0,
+    0,0,0,0,0,0,0,0,0,0
+};
+
+
+int RuleTable::PIECE_SCORE_GROUP[6][18] = {
+    {207,103,51,25,12,60,30,0,207,103,51,25,12,60,30,0,0,0},
+    {207,103,51,25,12,60,30,0,207,103,51,25,12,60,30,0,0,0},
+    {290,162,54,18,6,53,1,0,0,163,55,19,7,55,57,0,0,0},
+    {0,150,32,10,4,180,120,0,500,130,32,10,4,54,1,0,0,0},
+    {0,700,150,50,20,50,10,0,700,150,50,20,50,10,0,0,0},
+    {0,700,150,50,20,50,10,0,700,150,50,20,50,10,0,0,0}
+};
 /*
 0 : BothWithKing
 1 : EnemyWithoutKing
@@ -178,41 +197,21 @@ void RuleTable::print(){
 
 
 void RuleTable::setScoreStrategyByBoard(Board* board){
-    /*
+
+    if(board->numAlivePieces[!board->rootPly] <= 3 && board->getScore()>0 ) // end game
+    {
+        
+    }
+
+    board->moveListGenerator->handle(board);
+    int currentState = board->moveListGenerator->getState();
+    
+    if(currentState == rootState) return;
+
+    rootState = currentState;
     for(int i = 0 ; i < 18 ; ++i){
-        CAN_EAT_NUM[i] = 0;
+        PIECE_SCORE_BASIC[i] = PIECE_SCORE_GROUP[currentState][i];
     }
-    for(int i = 0 ; i < 15 ; ++i){
-        if(i==7)  continue;
-        for(int j = 0; j < 32 ; ++j)
-        {
-            int tp = board->pieces[j].piece;
-            if(tp>=0 && tp <= 17 && LEGAL_EAT_ARRAY[i][tp])
-            {
-                CAN_EAT_NUM[i]+=1;
-            }
-        }
-    }
-    CAN_EAT_NUM[5] = board->numAlivePieces[1] + board->alivePieces[1][0]*3 + board->alivePieces[1][1]*2;
-    CAN_EAT_NUM[13] = board->numAlivePieces[0] + board->alivePieces[0][0]*3 + board->alivePieces[0][1]*2;
-    for(int i = 0 ; i < 15 ; ++i){
-        if(i==7)  continue;
-        if(i==6)
-        {
-            PIECE_SCORE[i] = PIECE_SCORE_BASIC[i]*int(bool(board->pieces[16].piece!=DEAD))+CAN_EAT_NUM[i]+1;
-        }
-        else if(i==14)
-        {
-            PIECE_SCORE[i] = PIECE_SCORE_BASIC[i]*int(bool(board->pieces[0].piece!=DEAD))+CAN_EAT_NUM[i]+1;
-        }
-        else
-        {
-            PIECE_SCORE[i] = PIECE_SCORE_BASIC[i]*int(bool(CAN_EAT_NUM[i]))+CAN_EAT_NUM[i]+1;
-        }
-        std::cerr << PIECE_SCORE[i] << "   ||  "; 
-    }
-    std::cerr << std::endl;
-    */
 };
 
 

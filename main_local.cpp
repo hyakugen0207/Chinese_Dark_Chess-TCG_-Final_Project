@@ -14,6 +14,7 @@
 #include "NodePool.hpp"
 #include <stack>
 
+
 char convertToPiece(char command){
     switch (command)
     {
@@ -85,7 +86,10 @@ int main(){
   const char *data[10];
   int id;
   bool isFailed;
-
+    int time;
+    double nextTime = 1;
+    double allMove = 100;
+    double playCount = 0;
     RuleTable::initRuleTable();
     //RuleTable::print();
     ZobristHashTable::initStaticValue();
@@ -159,7 +163,7 @@ int main(){
         }
 
         myBoard->moveListGenerator->handle(myBoard);
-        //setScoreStrategyByCurrentBoard(myBoard);
+        setScoreStrategyByCurrentBoard(myBoard);
         //std::cerr << "Before move my board score is : " << myBoard->getScore() << std::endl;
 
         //negaScout
@@ -169,8 +173,10 @@ int main(){
             root = NodePool::pop();
             root->copy(myBoard, 1);
         }
-        
-        result = NegaScoutController::iterativeDeepening(root,10);
+        std::cerr << "time = " << time << std::endl;
+        std::cerr << "search time = " << nextTime/1000.0 << std::endl;
+        result = NegaScoutController::iterativeDeepening(root,nextTime/1000.0);
+        //result = NegaScoutController::iterativeDeepening(root,2);
         if(result.first==0)
         {
             std::cerr << "GGGGG" << std::endl;
@@ -188,6 +194,7 @@ int main(){
         if(strlen(buffer)>0 && buffer[2]=='-'){
 		    sprintf(write, "%c%c %c%c", buffer[0], buffer[1], buffer[3], buffer[4]);
 	    }
+        playCount++;
         break;
     case 14:
         myBoard->initBoard();
@@ -195,10 +202,21 @@ int main(){
         break;
     case 15:
         std::cerr << "(client) get command : time setting" << std::endl;
+        //time = atoi(data[1]);
         buffer[0] = 't';
         break;
     case 16:
-        std::cerr << "(client) get command : time left" << std::endl;
+        time = atoi(data[1]);
+        std::cerr << "(client) get command : time left : " << time  << std::endl;
+
+        
+        nextTime = (double(time) / (allMove-playCount)) > 15000 ? 15000 : (double(time) / (allMove-playCount));
+
+        if(time<60000)
+        {
+            nextTime = 2000;
+        }
+
         buffer[0] = 'l';
         break;
     default:

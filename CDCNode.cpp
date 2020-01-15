@@ -3,13 +3,22 @@
 #include "Board.hpp"
 #include "NodePool.hpp"
 
+int CDCNode::nodecount = 0;
 int CDCNode::getScore(){
     return (this->depth%2==0) ? this->board->getScore() : this->board->getScore()*-1;
 };
 
+int CDCNode::getRootScore(){
+    return (this->depth%2==0) ? this->board->getRootScore() : this->board->getRootScore()*-1;
+};
+
+int CDCNode::getNoMoveScore(){
+    return (this->depth%2==0) ? this->board->getNoMoveScore() : this->board->getNoMoveScore()*-1;
+}
+
 bool CDCNode::growChild(){
     // un-used
-    this->board->setMoveList();
+    this->board->setMoveList(1);
     if(this->board->moveList.size())
     {
         if(this->board->moveList[0].first==0)
@@ -46,10 +55,6 @@ void CDCNode::copy(CDCNode* p, std::pair<char,char> m, bool isFlip){
     this->parent = p;
     this->childIndex = 0;
     /*
-    for(int i = 0 ; i < 70 ; ++i){
-        this->children[i] = nullptr;
-    }
-    */
    if(p->nodeType==0)
     {
         this->nodeType = 1;        
@@ -70,13 +75,14 @@ void CDCNode::copy(CDCNode* p, std::pair<char,char> m, bool isFlip){
             this->nodeType = 0;
         } 
     }
+    */
     this->board->duplicate(p->board);
 
     this->isFlipNode = isFlip;
     if(this->isFlipNode)
     {
         //std::cerr << "new child CDCNode isFlip" << int(m.first) << "," << int(m.second) << std::endl;
-        this->nodeType = 2;
+        //this->nodeType = 2;
         this->depth = p->depth+1;
         this->hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first);
         this->board->flip(m.first,m.second);
@@ -110,11 +116,7 @@ CDCNode::CDCNode(CDCNode* p, std::pair<char,char> m, bool isFlip){
     this->move = m; 
     this->parent = p;
     this->childIndex = 0;
-    /*
-    for(int i = 0 ; i < 70 ; ++i){
-        this->children[i] = nullptr;
-    }
-    */
+/*
     if(p->nodeType==0)
     {
         this->nodeType = 1;        
@@ -135,14 +137,14 @@ CDCNode::CDCNode(CDCNode* p, std::pair<char,char> m, bool isFlip){
             this->nodeType = 0;
         } 
     }
-    
+ */   
     this->board = new Board(p->board);
     //std::cerr << "new child CDCNode2" << std::endl;
     this->isFlipNode = isFlip;
     if(this->isFlipNode)
     {
         //std::cerr << "new child CDCNode isFlip" << int(m.first) << "," << int(m.second) << std::endl;
-        this->nodeType = 2;
+        //this->nodeType = 2;
         this->depth = p->depth+1;
         this->hashValue = ZobristHashTable::updateHashValue(p->hashValue,this->board->board[m.first]->piece,m.first);
         this->board->flip(m.first,m.second);
@@ -170,7 +172,7 @@ CDCNode::CDCNode(CDCNode* p, std::pair<char,char> m, bool isFlip){
 };
 
 void CDCNode::copy(Board* b, char type){
-    this->nodeType = type;
+    //this->nodeType = type;
     this->depth = 0;
     this->move = std::make_pair(0,0); 
     this->parent = nullptr;
@@ -188,7 +190,7 @@ void CDCNode::copy(Board* b, char type){
 
 CDCNode::CDCNode(Board* b, char type){
     //std::cerr << "new CDCNode" << std::endl;
-    this->nodeType = type;
+    //this->nodeType = type;
     this->depth = 0;
     this->move = std::make_pair(0,0); 
     this->parent = nullptr;
@@ -253,8 +255,8 @@ double CDCNode::getChanceScore(){
             {
                 if(index >= childIndex) return score;
                 //std::cerr << "index :" << index << std::endl; 
-                //score += double(this->children[index]->getMinMaxScore())*this->board->flipPossibility[i][j];
-                score += double(this->children[index]->getScore())*this->board->flipPossibility[i][j];
+                score += double(this->children[index]->getMinMaxScore())*this->board->flipPossibility[i][j];
+                //score += double(this->children[index]->getScore())*this->board->flipPossibility[i][j];
                 ++index;
             }
         }
@@ -279,7 +281,9 @@ double CDCNode::getChanceScore(){
 void CDCNode::growMinMaxTree(CDCNode* node, int deep){
     if(deep<0) return;
     if(node->childIndex!=0) return;
-    node->board->setMoveList();
+    nodecount++;
+    //std::cerr << "minmax deep" << deep << std::endl;
+    node->board->setMoveList(0);
     if(!node->board->moveList.empty())
     {
         if(node->board->moveList[0].first==0)
@@ -293,7 +297,7 @@ void CDCNode::growMinMaxTree(CDCNode* node, int deep){
                 auto move = node->board->moveList[i];
                 if(move.first == move.second)
                 {
-                    break;
+                    continue;
                 }
                 else
                 {   
@@ -308,6 +312,10 @@ void CDCNode::growMinMaxTree(CDCNode* node, int deep){
                     growMinMaxTree(node->children[i], deep-1);
                 }
             }
+            if(deep==4)
+            {
+                debug();
+            }
             return;
         }
         
@@ -315,6 +323,11 @@ void CDCNode::growMinMaxTree(CDCNode* node, int deep){
     return ; //沒路
 };
 
+
+void CDCNode::debug(){
+    std::cerr << "nodecount = " << nodecount << std::endl;
+    nodecount=0;
+}
 int CDCNode::getMinMaxScore(){
 
 

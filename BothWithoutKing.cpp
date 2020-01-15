@@ -24,6 +24,10 @@ void BothWithoutKing::handle(Board* board)const{
 
 };
 
+int BothWithoutKing::getState()const{
+    return 4;
+};
+
 MoveListGenerator* BothWithoutKing::duplicate()const{
     return new BothWithoutKing();
 };

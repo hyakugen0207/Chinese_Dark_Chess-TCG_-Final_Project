@@ -2,6 +2,7 @@
 #include "Board.hpp"
 
 ULL ZobristHashTable::randomPlyValue[2];
+ULL ZobristHashTable::stateValue[6];
 ULL ZobristHashTable::randomValue[18][32];
 HashNode ZobristHashTable::hashNodes[HASH_NODE_NUM];
 
@@ -13,12 +14,17 @@ void ZobristHashTable::initStaticValue(){
     }
     randomPlyValue[0] = num(my_random_engine);
     randomPlyValue[1] = num(my_random_engine);
+    for(int i = 0 ; i < 6 ; ++i){
+        stateValue[i] = num(my_random_engine);
+    }
 };
 
 ULL ZobristHashTable::updateHashValue(Board* board){
     ULL value = 0;
     //ply
     value ^= randomPlyValue[int(board->ply)];
+    //state
+    value ^= stateValue[RuleTable::rootState];
     //board
     for(int i = 11 ; i < 49 ; ++i){
         if(board->board[i]->piece != EMPTY){

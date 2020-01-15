@@ -37,6 +37,10 @@ void EnemyWithoutKing::handle(Board* board)const{
     
 };
 
+int EnemyWithoutKing::getState()const{
+    return 2;
+};
+
 MoveListGenerator* EnemyWithoutKing::duplicate()const{
     return new EnemyWithoutKing();
 };

@@ -20,7 +20,11 @@ class RuleTable{
         static int DIR[4]; // {TOP, DOWN, LEFT, RIGHT}
         static int PIECE_SCORE[18];
         static int PIECE_SCORE_BASIC[18];
+        static int PIECE_SCORE_GROUP[6][18];
         static int CAN_EAT_NUM[18];
+        static int rootState;
+        static int POSITION_SCORE[60];
+
 
         static void initRuleTable();
         static void print();

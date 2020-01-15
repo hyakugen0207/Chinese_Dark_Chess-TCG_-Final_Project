@@ -24,7 +24,7 @@ const int EarlyGame::flipPriority[32] =
  22,23,24,25,26,27,32,33,
  34,35,36,37,11,18,41,48};
 
-void EarlyGame::genMoveList(Board* board) const{
+void EarlyGame::genMoveList(Board* board, int tag) const{
 
     // vector第一個放<0,0> 確認用
     board->moveList.clear();
@@ -224,7 +224,7 @@ int EarlyGame::getScore(Board* board) const{
 
 void EarlyGame::handle(Board* board)const{
     //std::cout << board->numAlivePieces[board->ply] << "," << board->numPiecesInList[board->ply] << std::endl;
-    if(board->numAlivePieces[board->ply] < 14 || board->numPiecesInList[board->ply] > 7)
+    if(board->numAlivePieces[board->ply] < 15 || board->numPiecesInList[board->ply] > 6)
     {
         bool enemyWithKing = board->alivePieces[!board->ply][0];
         bool withKing = board->alivePieces[board->ply][0];
@@ -336,4 +336,8 @@ bool EarlyGame::genEatList(Board* board) const{
         }
     }
     return false;
+}
+
+int EarlyGame::getState()const{
+    return 0;
 }

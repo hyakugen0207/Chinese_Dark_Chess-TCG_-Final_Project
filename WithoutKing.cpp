@@ -38,6 +38,10 @@ void WithoutKing::handle(Board* board)const{
     
 };
 
+int WithoutKing::getState()const{
+    return 3;
+};
+
 MoveListGenerator* WithoutKing::duplicate()const{
     return new WithoutKing();
 };
