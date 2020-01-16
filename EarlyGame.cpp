@@ -224,7 +224,7 @@ int EarlyGame::getScore(Board* board) const{
 
 void EarlyGame::handle(Board* board)const{
     //std::cout << board->numAlivePieces[board->ply] << "," << board->numPiecesInList[board->ply] << std::endl;
-    if(board->numAlivePieces[board->ply] < 15 || board->numPiecesInList[board->ply] > 6)
+    if(board->numAlivePieces[board->ply] < 15 || board->numPiecesInList[board->ply] > 5)
     {
         bool enemyWithKing = board->alivePieces[!board->ply][0];
         bool withKing = board->alivePieces[board->ply][0];

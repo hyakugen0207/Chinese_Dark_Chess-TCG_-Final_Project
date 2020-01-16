@@ -1,4 +1,6 @@
 #include <vector>
+#include "ZobristHashTable.hpp"
+#include "Board.hpp"
 #include <iostream>
 
 class AAA{
@@ -21,17 +23,12 @@ void pp(std::vector<std::vector<int>> v){
 }
 
 int main(){
-    std::vector<std::vector<int>> killerList;
-    std::vector<int> a;
+    ZobristHashTable::initStaticValue();
 
-
-    for(int i = 0 ; i < 3 ; ++i){
-        a.emplace_back(i);
-        a.emplace_back(i+1);
-        a.emplace_back(i+2);
-        killerList.emplace_back(a);
-        a.clear();
-        pp(killerList);
-    }
+    std::cout << ZobristHashTable::hashNodes[0].depth << std::endl;
+    std::cout << int(ZobristHashTable::hashNodes[0].exact) << std::endl;
+    std::cout << ZobristHashTable::hashNodes[0].key << std::endl;
+    std::cout << ZobristHashTable::hashNodes[0].nextMove.first << std::endl;
+    std::cout << ZobristHashTable::hashNodes[0].value << std::endl;
     return 0;
 };

@@ -8,7 +8,7 @@
 
 std::pair<char,char> myPremove = std::make_pair(0,0);
 std::pair<char,char> myPrePremove = std::make_pair(0,0);
-int count = 0;
+
 bool earlyReturn = false;
 auto timer = [] ( bool reset = false ) -> double {
     static decltype(std::chrono::steady_clock::now()) tick, tock;
@@ -36,7 +36,6 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
     
     std::cerr << "root" <<  rootScore << std::endl;
     std::pair<char,char> move = std::make_pair(0,0);
-    count = 0;
     while(depth<25){
         if(timer() > timeLimit) break;
         std::cerr << "deep" << depth << std::endl;
@@ -89,8 +88,9 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
  //               std::cerr << "1.6.2.1" << std::endl;
                 earlyReturn = false;
                 searchScore = negaScout(root->children[i], depth, -10000, 10000, &timeLimit)*-1;
-                scoreList.emplace_back(searchScore);
                 if(root->board->moveList.size()!=1 && nextMove==myPrePremove) searchScore = -8000;
+                scoreList.emplace_back(searchScore);
+                
                 std::cerr << "deep : " << depth << "  index : " << i << " (" << int(nextMove.first) << "," << int(nextMove.second) << ")"<< " searchScore = " << searchScore << " state : " << RuleTable::rootState << std::endl;
             }
  //          std::cerr << "1.6.3" << std::endl;
@@ -129,7 +129,7 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
         } 
         else
         {   
-            std::cerr << "break2" <<std::endl;
+           // std::cerr << "break2" <<std::endl;
             if(move.first==0)
             {
                 myPrePremove = myPremove;
@@ -139,8 +139,8 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
             break;
         } 
        // std::cerr << "1.8" << std::endl;
-        //std::cerr << "tmpScore in deep : " << depth << " is -> "<< tmpScore << std::endl;
-        //std::cerr << "tmpMove in deep : " << depth << " is -> "<< int(tmpMove.first) << "," << int(tmpMove.second) << std::endl;
+        std::cerr << "tmpScore in deep : " << depth << " is -> "<< tmpScore << std::endl;
+        std::cerr << "tmpMove in deep : " << depth << " is -> "<< int(tmpMove.first) << "," << int(tmpMove.second) << std::endl;
         ++depth;
         moveScore = tmpScore;
         scoreHistory.emplace_back(scoreList);
@@ -205,12 +205,10 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
 
     myPrePremove = myPremove;
     myPremove = move;
-    std::cerr << "count = " << count << std::endl;
     return move;
 };
 
 int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta, double* timeLimit){
-    count++;
     int oriAlpha = alpha;
     int currentLowerBound = -10000; // fail soft
     int currentUpperBound = beta;
@@ -241,7 +239,7 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
         }
         else
         {
-            if(hashNode.exact==2)currentUpperBound = hashValueInTable; 
+            //if(hashNode.exact==2)currentUpperBound = hashValueInTable; 
         }
     }
     
@@ -249,7 +247,7 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
     if(timer() > (*timeLimit))
     {
        // std::cerr << "a.1.1" << std::endl;
-       std::cerr << "break3" <<std::endl;
+       //std::cerr << "break3" <<std::endl;
         timeoff = true;
         earlyReturn = true;
         return -9000;
@@ -342,7 +340,6 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
 
     if(currentLowerBound<=oriAlpha && !timeoff && !earlyReturn)
     {
-
         ZobristHashTable::hashNodes[hashIndex].depth = depth;
         ZobristHashTable::hashNodes[hashIndex].nextMove = node->move;
         ZobristHashTable::hashNodes[hashIndex].key = node->hashValue;
@@ -361,8 +358,6 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
     }
     else if(!timeoff && !earlyReturn)
     {
-        //std::cerr << "save exact" << int(node->move.first) << "," << int(node->move.second) << "," << currentLowerBound  << "," << depth << std::endl;
-
         ZobristHashTable::hashNodes[hashIndex].nextMove = node->move;
         ZobristHashTable::hashNodes[hashIndex].key = node->hashValue;
         ZobristHashTable::hashNodes[hashIndex].value = currentLowerBound;

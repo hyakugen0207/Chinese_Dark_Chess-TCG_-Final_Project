@@ -88,7 +88,7 @@ int main(){
   bool isFailed;
     int time;
     double nextTime = 1;
-    double allMove = 100;
+    double allMove = 90;
     double playCount = 0;
     RuleTable::initRuleTable();
     //RuleTable::print();
@@ -175,8 +175,8 @@ int main(){
         }
         std::cerr << "time = " << time << std::endl;
         std::cerr << "search time = " << nextTime/1000.0 << std::endl;
-        result = NegaScoutController::iterativeDeepening(root,nextTime/1000.0);
-        //result = NegaScoutController::iterativeDeepening(root,2);
+        //result = NegaScoutController::iterativeDeepening(root,nextTime/1000.0);
+        result = NegaScoutController::iterativeDeepening(root,2);
         if(result.first==0)
         {
             std::cerr << "GGGGG" << std::endl;
@@ -210,11 +210,11 @@ int main(){
         std::cerr << "(client) get command : time left : " << time  << std::endl;
 
         
-        nextTime = (double(time) / (allMove-playCount)) > 15000 ? 15000 : (double(time) / (allMove-playCount));
+        nextTime = (double(time) / (std::abs(allMove-playCount)+1)) > 15000 ? 15000 : (double(time) / (std::abs(allMove-playCount)+1));
 
         if(time<60000)
         {
-            nextTime = 2000;
+            nextTime = (time/15 > 2000) ? 2000 : time/15;
         }
 
         buffer[0] = 'l';
