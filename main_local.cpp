@@ -175,8 +175,8 @@ int main(){
         }
         std::cerr << "time = " << time << std::endl;
         std::cerr << "search time = " << nextTime/1000.0 << std::endl;
-        //result = NegaScoutController::iterativeDeepening(root,nextTime/1000.0);
-        result = NegaScoutController::iterativeDeepening(root,2);
+        result = NegaScoutController::iterativeDeepening(root,nextTime/1000.0);
+        //result = NegaScoutController::iterativeDeepening(root,2);
         if(result.first==0)
         {
             std::cerr << "GGGGG" << std::endl;
