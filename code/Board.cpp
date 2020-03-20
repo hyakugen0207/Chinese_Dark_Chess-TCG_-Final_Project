@@ -111,6 +111,7 @@ bool Board::isLegalMove(int from, int to, bool ply){
 };
 
 bool Board::haveEatMove(){
+    
     this->moveList.clear();
     for(int i = 0; i < 2 ; ++i){
         for(int j = 0 ; j < numPiecesInList[i] ; ++j){
@@ -403,17 +404,17 @@ int Board::getRootScore(){
         int index = (pieceList[rootPly][i]->piece)-offset;
         if(index==6)
         {
-            score += RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[1][0]))+RuleTable::CAN_EAT_NUM[index]+1;
+            score += (RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[1][0]))+RuleTable::CAN_EAT_NUM[index]+1);
             //std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[!rootPly][0]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
         }
         else if(index==14)
         {
-            score += RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[0][0]))+RuleTable::CAN_EAT_NUM[index]+1;
+            score += (RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[0][0]))+RuleTable::CAN_EAT_NUM[index]+1);
             //std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[rootPly][0]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
         }
         else
         {
-            score += RuleTable::PIECE_SCORE_BASIC[index]+RuleTable::CAN_EAT_NUM[index]+1;
+            score += (RuleTable::PIECE_SCORE_BASIC[index]+RuleTable::CAN_EAT_NUM[index]+1);
             //std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(RuleTable::CAN_EAT_NUM[index]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
         }
         
@@ -422,17 +423,17 @@ int Board::getRootScore(){
         int index = (pieceList[!rootPly][i]->piece)+offset;
         if(index==6)
         {
-            score -= RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[1][0]))+RuleTable::CAN_EAT_NUM[index]+1;
+            score -= (RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[1][0]))+RuleTable::CAN_EAT_NUM[index]+1);
             //std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[!rootPly][0]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
         }
         else if(index==14)
         {
-            score -= RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[0][0]))+RuleTable::CAN_EAT_NUM[index]+1;
+            score -= (RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[0][0]))+RuleTable::CAN_EAT_NUM[index]+1);
            // std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(alivePieces[rootPly][0]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
         }
         else
         {
-            score -= RuleTable::PIECE_SCORE_BASIC[index]+RuleTable::CAN_EAT_NUM[index]+1;
+            score -= (RuleTable::PIECE_SCORE_BASIC[index]+RuleTable::CAN_EAT_NUM[index]+1);
            // std::cerr << index << "  -> " << RuleTable::PIECE_SCORE_BASIC[index]*int(bool(RuleTable::CAN_EAT_NUM[index]))+RuleTable::CAN_EAT_NUM[index]+1 << std::endl;
         }
         
@@ -574,8 +575,6 @@ int Board::getNoMoveScore(){
 }
 int Board::getScore(){
 
-    if(this->numAlivePieces[!ply]==0) return 8000;
-    else if(this->numAlivePieces[ply]==0) return -8000;
     int score = 0;
     int offset = 0;
     if(rootPly)offset = 8;

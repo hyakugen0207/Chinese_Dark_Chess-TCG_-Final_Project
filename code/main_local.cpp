@@ -88,7 +88,7 @@ int main(){
   bool isFailed;
     int time;
     double nextTime = 1;
-    double allMove = 90;
+    double allMove = 130;
     double playCount = 0;
     RuleTable::initRuleTable();
     //RuleTable::print();
@@ -173,9 +173,8 @@ int main(){
             root = NodePool::pop();
             root->copy(myBoard, 1);
         }
-        std::cerr << "time = " << time << std::endl;
-        std::cerr << "search time = " << nextTime/1000.0 << std::endl;
-        result = NegaScoutController::iterativeDeepening(root,nextTime/1000.0);
+        std::cerr << "nextTime = " << nextTime << std::endl;
+        result = NegaScoutController::iterativeDeepening(root,nextTime/1000);
         //result = NegaScoutController::iterativeDeepening(root,2);
         if(result.first==0)
         {
@@ -210,12 +209,21 @@ int main(){
         std::cerr << "(client) get command : time left : " << time  << std::endl;
 
         
-        nextTime = (double(time) / (std::abs(allMove-playCount)+1)) > 15000 ? 15000 : (double(time) / (std::abs(allMove-playCount)+1));
+        nextTime = (double(time) / (std::abs(allMove-playCount)+1)) > 12000 ? 12000 : (double(time) / (std::abs(allMove-playCount)+1));
 
-        if(time<60000)
+        if(time < 100000)
         {
-            nextTime = (time/15 > 2000) ? 2000 : time/15;
+            nextTime = 1000;
         }
+        else if(time < 150000)
+        {
+            nextTime = 1500;
+        }
+        else if(time < 200000)
+        {
+            nextTime = 2000;
+        }
+
 
         buffer[0] = 'l';
         break;

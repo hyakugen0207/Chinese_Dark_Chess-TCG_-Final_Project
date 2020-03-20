@@ -25,7 +25,7 @@ int NegaScoutController::nonFlipcount = 0;
 
 std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, double timeLimit){
     timer(true); // reset timer
-    int depth = 1;
+    int depth = 0;
     timeoff = false;
     bool genFlip = true;
     double flipSearchScore = -15000;
@@ -36,7 +36,7 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
     
     std::cerr << "root" <<  rootScore << std::endl;
     std::pair<char,char> move = std::make_pair(0,0);
-    while(depth<25){
+    while(depth<8){
         if(timer() > timeLimit) break;
         std::cerr << "deep" << depth << std::endl;
 
@@ -85,21 +85,17 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
             }
             else // do negaScout
             {  
- //               std::cerr << "1.6.2.1" << std::endl;
                 earlyReturn = false;
                 searchScore = negaScout(root->children[i], depth, -10000, 10000, &timeLimit)*-1;
-                if(root->board->moveList.size()!=1 && nextMove==myPrePremove) searchScore = -8000;
+                if(root->board->moveList.size()!=1 && nextMove==myPrePremove && searchScore>0) searchScore = -8000;
                 scoreList.emplace_back(searchScore);
                 
                 std::cerr << "deep : " << depth << "  index : " << i << " (" << int(nextMove.first) << "," << int(nextMove.second) << ")"<< " searchScore = " << searchScore << " state : " << RuleTable::rootState << std::endl;
             }
- //          std::cerr << "1.6.3" << std::endl;
             if(!timeoff && tmpScore < searchScore)
             {
- //               std::cerr << "1.6.3.1" << std::endl;
                 tmpScore = searchScore;
                 tmpMove = root->board->moveList[i];
- //               std::cerr << "1.6.3.2" << std::endl;
             }
             if((timer() > timeLimit) || timeoff) 
             {
@@ -141,14 +137,14 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
        // std::cerr << "1.8" << std::endl;
         std::cerr << "tmpScore in deep : " << depth << " is -> "<< tmpScore << std::endl;
         std::cerr << "tmpMove in deep : " << depth << " is -> "<< int(tmpMove.first) << "," << int(tmpMove.second) << std::endl;
-        ++depth;
+        depth++;
         moveScore = tmpScore;
         scoreHistory.emplace_back(scoreList);
         scoreList.clear();
     }
     //std::cerr << "2" << std::endl;
     
-    if(moveScore > 0) // 找到最早達到此分數的走步
+    if(moveScore > rootScore) // 找到最早達到此分數的走步
     {
         for(int i = scoreHistory.size()-1 ; i >= 0 ; --i){
             bool find = false;
@@ -184,7 +180,7 @@ std::pair<char,char> NegaScoutController::iterativeDeepening(CDCNode* root, doub
     
 
      // if move is not eat move / compare to flipScore
-    if(!RuleTable::LEGAL_EAT_ARRAY[root->board->board[move.first]->piece][root->board->board[move.second]->piece])
+    if(!RuleTable::LEGAL_EAT_ARRAY[root->board->board[move.first]->piece][root->board->board[move.second]->piece] || moveScore < rootScore)
     {
         if(flipSearchScore >= moveScore)
         {
@@ -213,11 +209,12 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
     int currentLowerBound = -10000; // fail soft
     int currentUpperBound = beta;
     int tag = 0;
+    bool isDeeper = false;
     
     ULL hashIndex = (node->hashValue)>>32;
     HashNode hashNode = ZobristHashTable::hashNodes[hashIndex];
     int hashValueInTable = hashNode.value;
-    
+    /*
     if(hashNode.isSame(node->hashValue)) //hit
     {
         if(depth <= hashNode.depth)
@@ -242,7 +239,7 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
             //if(hashNode.exact==2)currentUpperBound = hashValueInTable; 
         }
     }
-    
+    */
     
     if(timer() > (*timeLimit))
     {
@@ -258,8 +255,10 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
        if(!timeoff && depth==0 && node->board->haveEatMove())
        {
            //std::cerr << "expand" << node->depth << std::endl;
+           //return node->getScore();
            depth++;
            tag = 2;
+           isDeeper = true;
        }
        else
        {
@@ -281,6 +280,7 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
         }
         else
         { 
+            if(isDeeper) return node->board->getScore();
             earlyReturn = true;
             if(node->board->numAlivePieces[node->board->ply]==0) return -10000;
             return -6000;
@@ -336,7 +336,7 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
        // std::cerr << "a.5.6" << std::endl;
     }
     //std::cerr << "a.6" << std::endl;
-    
+   
 
     if(currentLowerBound<=oriAlpha && !timeoff && !earlyReturn)
     {
@@ -346,7 +346,7 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
         ZobristHashTable::hashNodes[hashIndex].value = currentLowerBound;
         ZobristHashTable::hashNodes[hashIndex].exact = 1;
     }
-    else if(currentLowerBound >= beta && !timeoff && !earlyReturn)
+    else if(currentLowerBound >= beta && !timeoff /*&& !earlyReturn*/)
     {
         ZobristHashTable::hashNodes[hashIndex].depth = depth;
         ZobristHashTable::hashNodes[hashIndex].nextMove = node->move;
@@ -364,6 +364,7 @@ int NegaScoutController::negaScout(CDCNode* node, int depth, int alpha, int beta
         ZobristHashTable::hashNodes[hashIndex].exact = 2;
         ZobristHashTable::hashNodes[hashIndex].depth = depth;
     }
+    
     //std::cerr << "move : " << int(node->move.first) << "," << int(node->move.second) <<"return:" << currentLowerBound << std::endl;
     return currentLowerBound;
 };
